@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application Form</title>
+    <!-- Link to the external CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <div class="banner-background">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+    </div>
+    <h1>Job Application Form</h1>
+    <p>Submit your job application and get the offer letter</p>
+</header>
+
+<div class="form-container">
+
+    <div class="forms">
+        <!-- Ensure form submits via POST and handles file uploads -->
+        <form id="offerLetterForm" method="POST" enctype="multipart/form-data" novalidate> {# Add novalidate to disable default browser validation in favor of JS #}
+            <!-- Display server-side errors -->
+            {% if error %}
+                <p class="server-error-message">{{ error }}</p> {# Use a distinct class for server errors #}
+            {% endif %}
+             <!-- Display flashed messages (e.g., after successful login or other actions if needed) -->
+             {% with messages = get_flashed_messages(with_categories=true) %}
+                 {% if messages %}
+                     {% for category, message in messages %}
+                         <p class="flash-message {{ category }}">{{ message }}</p> {# Use flash-message class #}
+                     {% endfor %}
+                 {% endif %}
+             {% endwith %}
+
+
+            <!-- Section 1: Job Details -->
+            <div id="personalDetails" class="section active">
+                 <h2>Section 1: Job & Offer Details</h2> {# Added section title #}
+                <label for="department">Select Department <span class="required-asterisk">*</span></label>
+                <select id="department" name="department" required>
+                     {# Use form_data passed from Flask to repopulate #}
+                    <option value="" disabled {% if not form_data or not form_data.get('department') %}selected{% endif %}>-- Select Department --</option>
+                    <option value="HR" {% if form_data and form_data.get('department') == 'HR' %}selected{% endif %}>Human Resources (HR)</option>
+                    <option value="IT" {% if form_data and form_data.get('department') == 'IT' %}selected{% endif %}>Information Technology (IT)</option>
+                    <option value="Finance" {% if form_data and form_data.get('department') == 'Finance' %}selected{% endif %}>Finance</option>
+                    <option value="Marketing" {% if form_data and form_data.get('department') == 'Marketing' %}selected{% endif %}>Marketing</option>
+                    <option value="Sales" {% if form_data and form_data.get('department') == 'Sales' %}selected{% endif %}>Sales</option>
+                    <option value="Operations" {% if form_data and form_data.get('department') == 'Operations' %}selected{% endif %}>Operations</option>
+                    <option value="Customer Support" {% if form_data and form_data.get('department') == 'Customer Support' %}selected{% endif %}>Customer Support</option>
+                </select>
+
+                <label for="jobRole">Job Role <span class="required-asterisk">*</span></label>
+                <select id="jobRole" name="jobRole" required>
+                    <option value="" disabled {% if not form_data or not form_data.get('jobRole') %}selected{% endif %}>-- Select Job Role --</option>
+                    <option value="Software Developer" {% if form_data and form_data.get('jobRole') == 'Software Developer' %}selected{% endif %}>Software Developer</option>
+                    <option value="Web Developer" {% if form_data and form_data.get('jobRole') == 'Web Developer' %}selected{% endif %}>Web Developer</option>
+                    <option value="Backend Developer" {% if form_data and form_data.get('jobRole') == 'Backend Developer' %}selected{% endif %}>Backend Developer</option>
+                    <option value="Software Tester" {% if form_data and form_data.get('jobRole') == 'Software Tester' %}selected{% endif %}>Software Tester</option>
+                    <option value="Java Developer" {% if form_data and form_data.get('jobRole') == 'Java Developer' %}selected{% endif %}>Java Developer</option>
+                    <option value="Python Developer" {% if form_data and form_data.get('jobRole') == 'Python Developer' %}selected{% endif %}>Python Developer</option>
+                    <option value="Cloud Engineer" {% if form_data and form_data.get('jobRole') == 'Cloud Engineer' %}selected{% endif %}>Cloud Engineer</option>
+                    <option value="Data Scientist" {% if form_data and form_data.get('jobRole') == 'Data Scientist' %}selected{% endif %}>Data Scientist</option>
+                    <option value="Business Analyst" {% if form_data and form_data.get('jobRole') == 'Business Analyst' %}selected{% endif %}>Business Analyst</option>
+                    <option value="DevOps Engineer" {% if form_data and form_data.get('jobRole') == 'DevOps Engineer' %}selected{% endif %}>DevOps Engineer</option>
+                    <option value="Machine Learning Engineer" {% if form_data and form_data.get('jobRole') == 'Machine Learning Engineer' %}selected{% endif %}>Machine Learning Engineer</option>
+                    <option value="Project Manager" {% if form_data and form_data.get('jobRole') == 'Project Manager' %}selected{% endif %}>Project Manager</option>
+                    <option value="Full Stack Developer" {% if form_data and form_data.get('jobRole') == 'Full Stack Developer' %}selected{% endif %}>Full Stack Developer</option>
+                </select>
+
+                <label for="branchLocation">Branch Location <span class="required-asterisk">*</span></label>
+                <select id="branchLocation" name="branchLocation" required>
+                    <option value="" disabled {% if not form_data or not form_data.get('branchLocation') %}selected{% endif %}>-- Select Branch Location --</option>
+                    <option value="Pune Branch" {% if form_data and form_data.get('branchLocation') == 'Pune Branch' %}selected{% endif %}>Pune</option>
+                    <option value="Bangalore Branch" {% if form_data and form_data.get('branchLocation') == 'Bangalore Branch' %}selected{% endif %}>Bangalore</option>
+                    <option value="Hyderabad Branch" {% if form_data and form_data.get('branchLocation') == 'Hyderabad Branch' %}selected{% endif %}>Hyderabad</option>
+                </select>
+
+                <label for="expectedSalary">Expected Salary (Per Annum) <span class="required-asterisk">*</span></label>
+                <input type="number" id="expectedSalary" name="expectedSalary" placeholder="e.g., 500000" required min="100000" title="Salary must be at least 1,00,000" step="10000" value="{{ form_data.get('expectedSalary', '') if form_data else '' }}">
+
+                <label for="interviewDate">Interview Date <span class="required-asterisk">*</span></label>
+                <input type="date" id="interviewDate" name="interviewDate" required title="Select the date you were interviewed." value="{{ form_data.get('interviewDate', '') if form_data else '' }}">
+
+                <label for="joiningDate">Expected Date of Joining <span class="required-asterisk">*</span></label>
+                <input type="date" id="joiningDate" name="joiningDate" required title="Select your expected start date." value="{{ form_data.get('joiningDate', '') if form_data else '' }}">
+
+                <label for="employmentType">Employment Type <span class="required-asterisk">*</span></label>
+                <select id="employmentType" name="employmentType" required>
+                     <option value="" disabled {% if not form_data or not form_data.get('employmentType') %}selected{% endif %}>-- Select Employment Type --</option>
+                     <option value="Full-Time" {% if form_data and form_data.get('employmentType') == 'Full-Time' %}selected{% endif %}>Full-Time</option>
+                     <option value="Part-Time" {% if form_data and form_data.get('employmentType') == 'Part-Time' %}selected{% endif %}>Part-Time</option>
+                     <option value="Internship" {% if form_data and form_data.get('employmentType') == 'Internship' %}selected{% endif %}>Internship</option>
+                     <option value="Contract" {% if form_data and form_data.get('employmentType') == 'Contract' %}selected{% endif %}>Contract</option>
+                </select>
+
+                <div class="button-container" id="next1">
+                    <button type="button" onclick="goNext()" class="nav-button">Next <span class="arrow">→</span></button> {# Added class and arrow #}
+                </div>
+            </div>
+
+            <!-- Section 2: Personal Details -->
+            <div id="officeDetails" class="section">
+                 <h2>Section 2: Personal Details</h2>
+                <label for="FullName">Full Name <span class="required-asterisk">*</span></label>
+                <input type="text" placeholder="As per official documents" id="FullName" name="FullName" required pattern="^(?!\s)(?!.*\s{2,})([A-Za-zÀ-ÖØ-öø-ÿ]+(?: [A-Za-zÀ-ÖØ-öø-ÿ.]+)*)$" minlength="3" maxlength="50" title="Enter your full name (letters, spaces, periods allowed; no leading/trailing/double spaces)." value="{{ form_data.get('FullName', '') if form_data else '' }}">
+
+                <label for="email">Email Address <span class="required-asterisk">*</span></label>
+                <input type="email" placeholder="e.g., your.email@example.com" id="email" name="email" required minlength="5" maxlength="60" title="Enter a valid email address." value="{{ form_data.get('email', '') if form_data else '' }}">
+
+                <label for="dob">Date of Birth <span class="required-asterisk">*</span></label>
+                <input type="date" id="dob" name="dob" required title="Your date of birth (must be between 20 and 60 years old)." value="{{ form_data.get('dob', '') if form_data else '' }}">
+
+                <label for="mobileNumber">Mobile Number <span class="required-asterisk">*</span></label>
+                <input type="tel" placeholder="e.g., 9876543210" id="mobileNumber" name="mobileNumber" pattern="[6-9][0-9]{9}" required minlength="10" maxlength="10" title="Enter a valid 10-digit Indian mobile number (starting with 6, 7, 8, or 9)." value="{{ form_data.get('mobileNumber', '') if form_data else '' }}">
+
+                <label for="fatherName">Father's Name <span class="required-asterisk">*</span></label>
+                <input type="text" placeholder="Father's full name" id="fatherName" name="fatherName" required minlength="3" maxlength="50" pattern="^(?!\s)(?!.*\s{2,})([A-Za-zÀ-ÖØ-öø-ÿ]+(?: [A-Za-zÀ-ÖØ-öø-ÿ.]+)*)$" title="Enter father's full name (letters, spaces, periods allowed)." value="{{ form_data.get('fatherName', '') if form_data else '' }}">
+
+                <label for="permanentAddress">Permanent Address <span class="required-asterisk">*</span></label>
+                <input type="text" placeholder="Your full permanent address" id="permanentAddress" name="permanentAddress" required minlength="10" maxlength="150" title="Enter your complete permanent address." value="{{ form_data.get('permanentAddress', '') if form_data else '' }}">
+
+                <div class="button-container">
+                    <button type="button" onclick="goPrevious()" class="nav-button"><span class="arrow">←</span> Previous</button>
+                    <button type="button" onclick="goNext()" class="nav-button">Next <span class="arrow">→</span></button>
+                </div>
+            </div>
+
+            <!-- Section 3: Education Details -->
+            <div id="educationDetails" class="section">
+                 <h2>Section 3: School & Intermediate Education</h2>
+                <label for="sscYear">SSC (Class 10th) Year of Passing <span class="required-asterisk">*</span></label>
+                <input type="number" placeholder="e.g., 2010" id="sscYear" name="sscYear" required min="1950" max="2024" step="1" title="Enter the year you passed Class 10th." value="{{ form_data.get('sscYear', '') if form_data else '' }}">
+
+                <label for="sscPercentage">SSC CGPA or Percentage <span class="required-asterisk">*</span></label>
+                <input type="text" placeholder="e.g., 9.5 (CGPA) or 95% (Percentage)" id="sscPercentage" name="sscPercentage" required pattern="^(100(\.0{1,2})?%?|[1-9]?\d(\.\d{1,2})?%?)$" title="Enter valid CGPA (0-10, e.g., 8.5) or Percentage (0-100%, e.g., 85 or 85%)." value="{{ form_data.get('sscPercentage', '') if form_data else '' }}">
+
+                <label for="sscDoc">Upload SSC Marksheet/Certificate (PDF) <span class="required-asterisk">*</span></label>
+                <input type="file" id="sscDoc" name="sscDoc" required accept=".pdf" title="Upload your SSC marksheet or certificate (PDF only, max 5MB).">
+                <span class="file-info">Max 5MB, PDF only.</span>
+
+                <label for="intermediateYear">Intermediate/Diploma (Class 12th) Year of Passing <span class="required-asterisk">*</span></label>
+                <input type="number" placeholder="e.g., 2012" id="intermediateYear" name="intermediateYear" required min="1950" max="2026" step="1" title="Enter the year you passed Class 12th or Diploma." value="{{ form_data.get('intermediateYear', '') if form_data else '' }}">
+
+                <label for="intermediatePercentage">Intermediate/Diploma CGPA or Percentage <span class="required-asterisk">*</span></label>
+                <input type="text" placeholder="e.g., 8.8 (CGPA) or 88% (Percentage)" id="intermediatePercentage" name="intermediatePercentage" required pattern="^(100(\.0{1,2})?%?|[1-9]?\d(\.\d{1,2})?%?)$" title="Enter valid CGPA (0-10) or Percentage (0-100%)." value="{{ form_data.get('intermediatePercentage', '') if form_data else '' }}">
+
+                <label for="intermediateDoc">Upload Intermediate/Diploma Marksheet (PDF) <span class="required-asterisk">*</span></label>
+                <input type="file" id="intermediateDoc" name="intermediateDoc" required accept=".pdf" title="Upload your Intermediate/Diploma marksheet (PDF only, max 5MB).">
+                <span class="file-info">Max 5MB, PDF only.</span>
+
+                <div class="button-container">
+                    <button type="button" onclick="goPrevious()" class="nav-button"><span class="arrow">←</span> Previous</button>
+                    <button type="button" onclick="goNext()" class="nav-button">Next <span class="arrow">→</span></button>
+                </div>
+            </div>
+
+
+            <!-- Section 4: Higher Education & Additional Docs -->
+            <div id="higherEducation" class="section">
+                 <h2>Section 4: Higher Education & Certifications</h2>
+                <label for="higherGraduation">Higher Graduation (College/University Name) <span class="required-asterisk">*</span></label>
+                <input type="text" placeholder="e.g., University of Technology" id="higherGraduation" name="higherGraduation" required minlength="5" maxlength="100" pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s.,'-]+$" title="Enter the name of your College/University (letters, spaces, ., ', - allowed)." value="{{ form_data.get('higherGraduation', '') if form_data else '' }}">
+
+                <label for="registerNumber">Graduation Registration/Roll Number <span class="required-asterisk">*</span></label>
+                <input type="text" placeholder="e.g., 19BCE1234" id="registerNumber" name="registerNumber" required minlength="5" maxlength="20" pattern="^[A-Za-z0-9/-]+$" title="Enter your registration or roll number (alphanumeric, /, - allowed)." value="{{ form_data.get('registerNumber', '') if form_data else '' }}">
+
+                <label for="graduationYear">Graduation Year of Passing <span class="required-asterisk">*</span></label>
+                <input type="number" placeholder="e.g., 2016" id="graduationYear" name="graduationYear" required min="1950" max="2028" step="1" title="Enter the year you completed your graduation." value="{{ form_data.get('graduationYear', '') if form_data else '' }}">
+
+                <label for="graduationPercentage">Graduation CGPA/Percentage <span class="required-asterisk">*</span></label>
+                <input type="text" placeholder="e.g., 7.5 (CGPA) or 75% (Percentage)" id="graduationPercentage" name="graduationPercentage" required pattern="^(100(\.0{1,2})?%?|[1-9]?\d(\.\d{1,2})?%?)$" title="Enter valid Graduation CGPA (0-10) or Percentage (0-100%)." value="{{ form_data.get('graduationPercentage', '') if form_data else '' }}">
+
+                <label for="graduationDoc">Upload Graduation Marksheet/Certificate (PDF) <span class="required-asterisk">*</span></label>
+                <input type="file" id="graduationDoc" name="graduationDoc" required accept=".pdf" title="Upload your Graduation marksheet or certificate (PDF only, max 5MB).">
+                 <span class="file-info">Max 5MB, PDF only.</span>
+
+                <label for="additionalCertifications">Additional Certifications (Name, Optional)</label>
+                <input type="text" placeholder="e.g., AWS Certified Developer, PMP (comma-separated)" id="additionalCertifications" name="additionalCertifications" pattern="^[A-Za-z0-9\s.,#+()-]+$" maxlength="200" title="List any relevant certifications." value="{{ form_data.get('additionalCertifications', '') if form_data else '' }}">
+
+                <label for="Additionalfiles">Upload Additional Documents (Optional, PDF only)</label>
+                <input type="file" id="Additionalfiles" name="Additionalfiles" accept=".pdf" title="Upload any other relevant documents like portfolio link, cover letter, etc. (PDF only, max 5MB).">
+                 <span class="file-info">Max 5MB, PDF only.</span>
+
+                <div class="button-container">
+                    <button type="button" onclick="goPrevious()" class="nav-button"><span class="arrow">←</span> Previous</button>
+                    <button type="button" onclick="goNext()" class="nav-button">Next <span class="arrow">→</span></button>
+                </div>
+            </div>
+
+            <!-- Section 5: Experience -->
+            <div id="experienceDetails" class="section">
+                 <h2>Section 5: Work Experience</h2>
+                <label for="experienceStatus">Are you an Experienced or Fresher? <span class="required-asterisk">*</span></label>
+                <select id="experienceStatus" name="experienceStatus" onchange="toggleExperienceFields()" required>
+                     {# Ensure repopulation works correctly #}
+                    <option value="fresher" {% if form_data and form_data.get('experienceStatus') == 'fresher' %}selected{% endif %}>Fresher</option>
+                    <option value="experience" {% if form_data and form_data.get('experienceStatus') == 'experience' %}selected{% endif %}>Experienced</option>
+                </select>
+
+                <!-- Conditional Experience Fields -->
+                <div id="experienceFields" style="display: {% if form_data and form_data.get('experienceStatus') == 'experience' %}block{% else %}none{% endif %};">
+                    <label for="yearsOfExperience">Years of Experience <span class="required-asterisk">*</span></label>
+                    {# Required attribute will be added/removed by JS based on selection #}
+                    <input type="number" placeholder="e.g., 3.5" id="yearsOfExperience" name="yearsOfExperience" min="0" max="50" step="0.5" title="Enter total years of relevant experience (e.g., 2.5 for 2 years 6 months)." value="{{ form_data.get('yearsOfExperience', '') if form_data else '' }}">
+
+                    <label for="previousCompany">Most Recent Company Name <span class="required-asterisk">*</span></label>
+                    <input type="text" placeholder="e.g., Tech Solutions Inc." id="previousCompany" name="previousCompany" minlength="2" maxlength="100" pattern="^(?!\s)(?!.*\s{2,})([A-Za-z0-9À-ÖØ-öø-ÿ\s.,'&()-]+)$" title="Enter the name of your most recent employer." value="{{ form_data.get('previousCompany', '') if form_data else '' }}">
+
+                    <label for="previousJobRole">Most Recent Job Role <span class="required-asterisk">*</span></label>
+                    <select id="previousJobRole" name="previousJobRole"> {# Select doesn't need pattern #}
+                        <option value="" disabled {% if not form_data or not form_data.get('previousJobRole') %}selected{% endif %}>-- Select Previous Job Role --</option>
+                         <!-- Populate options dynamically or list them -->
+                        <option value="Software Developer" {% if form_data and form_data.get('previousJobRole') == 'Software Developer' %}selected{% endif %}>Software Developer</option>
+                        <option value="Web Developer" {% if form_data and form_data.get('previousJobRole') == 'Web Developer' %}selected{% endif %}>Web Developer</option>
+                        <option value="Backend Developer" {% if form_data and form_data.get('previousJobRole') == 'Backend Developer' %}selected{% endif %}>Backend Developer</option>
+                        <option value="Software Tester" {% if form_data and form_data.get('previousJobRole') == 'Software Tester' %}selected{% endif %}>Software Tester</option>
+                        <option value="Java Developer" {% if form_data and form_data.get('previousJobRole') == 'Java Developer' %}selected{% endif %}>Java Developer</option>
+                        <option value="Python Developer" {% if form_data and form_data.get('previousJobRole') == 'Python Developer' %}selected{% endif %}>Python Developer</option>
+                         <option value="Database Administrator" {% if form_data and form_data.get('previousJobRole') == 'Database Administrator' %}selected{% endif %}>Database Administrator</option>
+                        <option value="System Administrator" {% if form_data and form_data.get('previousJobRole') == 'System Administrator' %}selected{% endif %}>System Administrator</option>
+                        <option value="Security Analyst" {% if form_data and form_data.get('previousJobRole') == 'Security Analyst' %}selected{% endif %}>Security Analyst</option>
+                        <option value="Cloud Engineer" {% if form_data and form_data.get('previousJobRole') == 'Cloud Engineer' %}selected{% endif %}>Cloud Engineer</option>
+                        <option value="Data Scientist" {% if form_data and form_data.get('previousJobRole') == 'Data Scientist' %}selected{% endif %}>Data Scientist</option>
+                        <option value="Business Analyst" {% if form_data and form_data.get('previousJobRole') == 'Business Analyst' %}selected{% endif %}>Business Analyst</option>
+                        <option value="DevOps Engineer" {% if form_data and form_data.get('previousJobRole') == 'DevOps Engineer' %}selected{% endif %}>DevOps Engineer</option>
+                        <option value="Machine Learning Engineer" {% if form_data and form_data.get('previousJobRole') == 'Machine Learning Engineer' %}selected{% endif %}>Machine Learning Engineer</option>
+                        <option value="Project Manager" {% if form_data and form_data.get('previousJobRole') == 'Project Manager' %}selected{% endif %}>Project Manager</option>
+                        <option value="Full Stack Developer" {% if form_data and form_data.get('previousJobRole') == 'Full Stack Developer' %}selected{% endif %}>Full Stack Developer</option>
+                        <option value="Other" {% if form_data and form_data.get('previousJobRole') == 'Other' %}selected{% endif %}>Other (Specify if necessary)</option>
+                    </select>
+                </div>
+
+                <div class="button-container">
+                    <button type="button" onclick="goPrevious()" class="nav-button"><span class="arrow">←</span> Previous</button>
+                    <!-- Final Submit Button -->
+                    <button type="submit" class="form-button">Submit Application</button>
+                </div>
+            </div>
+        </form>
+
+    </div> <!-- end .forms -->
+</div> <!-- end .form-container -->
+
+<script>
+    // --- Global Variables ---
+    let currentSectionIndex = 0;
+    let sections = [];
+    const form = document.getElementById('offerLetterForm');
+
+    // --- Initialization ---
+    window.onload = function () {
+        console.log("Window loaded. Initializing form script...");
+        sections = Array.from(document.querySelectorAll('.section')); // Convert NodeList to Array
+        if (sections.length > 0) {
+            showSection(currentSectionIndex); // Show the first section initially
+        } else {
+            console.error("No sections found for the form!");
+            return;
+        }
+
+        // Setup constraints and listeners
+        setInterviewDateConstraints();
+        setJoiningDateConstraints();
+        setDOBConstraints();
+        attachRealTimeValidation();
+        toggleExperienceFields(); // Initial check and setup listener for changes
+        restrictInputFormats();
+        attachFileValidation();
+
+        // Ensure initial state of experience fields is correct, especially after server error repopulation
+        const initialExperienceStatus = document.getElementById('experienceStatus')?.value;
+        if (initialExperienceStatus) {
+             updateExperienceFieldRequirements(initialExperienceStatus);
+        }
+        console.log("Form script initialization complete.");
+    };
+
+    // --- Navigation ---
+    function showSection(index) {
+        // console.log(`Attempting to show section ${index}`); // Reduce console noise
+        // Boundary checks
+        if (index < 0 || index >= sections.length) {
+            console.error("Invalid section index:", index);
+            return;
+        }
+        sections.forEach((section, i) => {
+            section.classList.toggle('active', i === index);
+        });
+        currentSectionIndex = index; // Update the global index
+        window.scrollTo(0, 0); // Scroll to top when changing sections
+        // console.log(`Successfully shown section ${index}`); // Reduce console noise
+    }
+
+    function goNext() {
+        console.log(`goNext called. Current index: ${currentSectionIndex}`);
+        // Validate *only* the current section before moving next
+        if (!validateSection(currentSectionIndex)) {
+            console.warn(`Validation failed for section ${currentSectionIndex}. Cannot proceed.`);
+            alert("Please correct the errors in the current section (marked in red) before proceeding.");
+            // Focus the first invalid input in the current section
+             const firstError = sections[currentSectionIndex].querySelector('.has-error');
+             if (firstError) {
+                 firstError.focus();
+                 // firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+             }
+            return; // Stop if current section is invalid
+        }
+
+        // Proceed to next section if validation passes and not the last section
+        if (currentSectionIndex < sections.length - 1) {
+            console.log(`Validation passed for section ${currentSectionIndex}. Moving to next section.`);
+            showSection(currentSectionIndex + 1);
+        } else {
+             console.log(`Already on the last section (${currentSectionIndex}). Cannot go next.`);
+        }
+    }
+
+    function goPrevious() {
+         console.log(`goPrevious called. Current index: ${currentSectionIndex}`);
+        if (currentSectionIndex > 0) {
+            showSection(currentSectionIndex - 1);
+        } else {
+            console.log("Already on the first section. Cannot go previous.");
+        }
+    }
+
+    // --- Validation ---
+    function validateSection(index) {
+        if (index < 0 || index >= sections.length) return false; // Invalid index
+
+        let section = sections[index];
+        let inputs = section.querySelectorAll('input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled])');
+        let isSectionValid = true; // Assume valid initially
+        console.log(`Validating section ${index} (${section.id})`);
+
+        inputs.forEach(input => {
+             if (!validateInput(input)) {
+                 isSectionValid = false;
+                 console.log(`-- Input ${input.id || input.name} FAILED validation in section ${index}.`);
+             }
+        });
+        console.log(`Section ${index} validation result: ${isSectionValid}`);
+        return isSectionValid;
+    }
+
+    function validateInput(input) {
+        removeError(input); // Clear previous error first
+
+        const experienceFieldsDiv = document.getElementById('experienceFields');
+        const isExperienceField = experienceFieldsDiv && input.closest('#experienceFields');
+        const isExperienceVisible = experienceFieldsDiv && experienceFieldsDiv.style.display === 'block';
+
+        let value = input.value.trim();
+        // Determine if the field is effectively required
+        const effectivelyRequired = input.required || (isExperienceField && isExperienceVisible);
+
+        // Skip validation if not required and empty
+        if (!effectivelyRequired && !value) {
+            return true;
+        }
+
+        let isValid = true;
+        let errorMessage = "";
+
+        // 1. Required Check
+        if (effectivelyRequired && !value) {
+            errorMessage = "This field is required.";
+            isValid = false;
+        }
+
+        // 2. Length Checks
+        if (isValid && value) {
+            if (input.minLength > 0 && value.length < input.minLength) {
+                errorMessage = `Must be at least ${input.minLength} characters long.`;
+                isValid = false;
+            }
+            if (isValid && input.maxLength > 0 && value.length > input.maxLength) {
+                errorMessage = `Cannot exceed ${input.maxLength} characters.`;
+                isValid = false;
+            }
+        }
+
+         // 3. Pattern Check
+         if (isValid && value && input.pattern) {
+             try {
+                 let regex = new RegExp(input.pattern);
+                 if (!regex.test(value)) {
+                     errorMessage = input.title || "Invalid format.";
+                     isValid = false;
+                 }
+             } catch (e) {
+                  console.error(`Invalid regex pattern for input ${input.id || input.name}: ${input.pattern}`, e);
+                  errorMessage = "Invalid format check configured.";
+                  isValid = false;
+             }
+         }
+
+        // 4. Specific Type/Format Validations
+        if (isValid && (value || input.type === 'file')) { // Also check file type even if value is empty string
+             switch (input.type) {
+                case "email":
+                    if (!validateEmail(value)) {
+                        errorMessage = "Please enter a valid email address.";
+                        isValid = false;
+                    }
+                    break;
+                case "number":
+                    const numValue = parseFloat(value);
+                    if (isNaN(numValue)) {
+                         errorMessage = "Please enter a valid number.";
+                         isValid = false;
+                         break;
+                    }
+                    if (input.min !== "" && numValue < parseFloat(input.min)) {
+                        errorMessage = `Value must be ${input.min} or greater.`;
+                        isValid = false;
+                    }
+                    if (isValid && input.max !== "" && numValue > parseFloat(input.max)) {
+                        errorMessage = `Value must be ${input.max} or less.`;
+                        isValid = false;
+                    }
+                    if (isValid && input.id === 'yearsOfExperience' && input.step === '0.5' && (numValue * 2) % 1 !== 0) {
+                         errorMessage = "Experience can be in increments of 0.5 years (e.g., 2, 2.5, 3).";
+                         isValid = false;
+                     }
+                     if (isValid && input.id === 'expectedSalary' && numValue < 100000) {
+                         errorMessage = "Salary must be at least ₹1,00,000.";
+                         isValid = false;
+                     }
+                    break;
+                case "date":
+                    if (!validateDateConstraints(input)) {
+                        isValid = false;
+                        if (!input.nextElementSibling?.classList.contains('error-message')) {
+                            errorMessage = "Invalid date or date out of allowed range.";
+                         } else {
+                             errorMessage = ""; // Let sub-validator handle message
+                         }
+                    }
+                    break;
+                case "tel":
+                    // Pattern should handle main check
+                    break;
+                 case "file":
+                     // Need to check if required file is actually selected
+                     if (effectivelyRequired && input.files.length === 0) {
+                          errorMessage = "This document is required.";
+                          isValid = false;
+                     } else if (input.files.length > 0) {
+                         // If a file is selected, run the specific file validation (type/size)
+                         // Note: This re-runs checks done by onchange, but ensures validity at submission/navigation
+                         if (!validateFile(input)) { // validateFile shows its own errors
+                             isValid = false;
+                             errorMessage = ""; // Let validateFile handle message
+                         }
+                     }
+                     break;
+            }
+
+            // 5. Custom Validation Functions
+            if (isValid) {
+                 if (['sscPercentage', 'intermediatePercentage', 'graduationPercentage'].includes(input.id)) {
+                    if (!validateCGPA(input)) { isValid = false; errorMessage = ""; }
+                 } else if (['sscYear', 'intermediateYear', 'graduationYear'].includes(input.id)) {
+                     if (!validateYearSequence(input)) { isValid = false; errorMessage = ""; }
+                 }
+            }
+        }
+
+        if (!isValid && errorMessage) {
+             showError(input, errorMessage);
+         }
+
+        return isValid;
+    }
+
+    // --- Specific Validation Helpers ---
+    function validateEmail(email) {
+        const emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+        return emailPattern.test(email);
+    }
+    function validateCGPA(input) {
+        const value = input.value.trim();
+        if (!value && !input.required) return true; // Allow empty if not required
+        if (!value && input.required) { // Explicit required check
+             showError(input, "This field is required.");
+             return false;
+        }
+        const pattern = /^(?:100(?:\.0{1,2})?%?|[1-9]?\d(?:\.\d{1,2})?%?)$/;
+        if (!pattern.test(value)) {
+             showError(input, "Enter valid CGPA (e.g., 8.5) or Percentage (e.g., 85%). Range 0-100.");
+             return false;
+        }
+        const numPart = parseFloat(value.replace('%', ''));
+         if (isNaN(numPart) || numPart < 0 || numPart > 100) {
+             showError(input, "Value must be between 0 and 100.");
+             return false;
+         }
+        return true;
+    }
+    function validateYearSequence(input) {
+        const sscYearInput = document.getElementById("sscYear");
+        const interYearInput = document.getElementById("intermediateYear");
+        const gradYearInput = document.getElementById("graduationYear");
+        const sscYear = parseInt(sscYearInput?.value) || NaN;
+        const interYear = parseInt(interYearInput?.value) || NaN;
+        const gradYear = parseInt(gradYearInput?.value) || NaN;
+        let isValidSequence = true;
+
+        if (!isNaN(sscYear) && !isNaN(interYear) && interYear <= sscYear) {
+            if (input.id === 'intermediateYear' || input.id === 'sscYear') {
+                 showError(interYearInput, "Intermediate year must be after SSC year.");
+                 isValidSequence = false;
+            }
+        }
+        if (!isNaN(interYear) && !isNaN(gradYear) && gradYear <= interYear) {
+             if (input.id === 'graduationYear' || input.id === 'intermediateYear') {
+                 showError(gradYearInput, "Graduation year must be after Intermediate year.");
+                 isValidSequence = false;
+             }
+        }
+        // Clear errors if sequence becomes valid
+        if (isValidSequence) {
+            if (input.id === 'sscYear' || input.id === 'intermediateYear') removeError(interYearInput);
+            if (input.id === 'intermediateYear' || input.id === 'graduationYear') removeError(gradYearInput);
+            if (input.id === 'intermediateYear' || input.id === 'sscYear') removeError(sscYearInput);
+        }
+        return isValidSequence;
+    }
+    function validateDateConstraints(input) {
+        const dateValue = input.value;
+        if (!dateValue && !input.required) return true;
+        if (!dateValue && input.required) { // Explicit required check
+             showError(input, "This field is required.");
+             return false;
+        }
+
+        let selectedDate;
+        try {
+             selectedDate = new Date(dateValue + "T00:00:00Z");
+             if (isNaN(selectedDate.getTime())) throw new Error("Invalid date value");
+             const [year, month, day] = dateValue.split('-').map(Number);
+             if (selectedDate.getUTCFullYear() !== year || selectedDate.getUTCMonth() !== month - 1 || selectedDate.getUTCDate() !== day) {
+                 throw new Error("Invalid day for month");
+             }
+        } catch (e) {
+            showError(input, "Invalid date entered.");
+            return false;
+        }
+
+         const minDateStr = input.min;
+         const maxDateStr = input.max;
+         if (minDateStr) {
+             const minDate = new Date(minDateStr + "T00:00:00Z");
+             if (selectedDate < minDate) {
+                 showError(input, `Date cannot be earlier than ${minDate.toLocaleDateString()}.`);
+                 return false;
+             }
+         }
+         if (maxDateStr) {
+             const maxDate = new Date(maxDateStr + "T00:00:00Z");
+             if (selectedDate > maxDate) {
+                 showError(input, `Date cannot be later than ${maxDate.toLocaleDateString()}.`);
+                 return false;
+             }
+         }
+        if (input.id === 'dob') {
+            let today = new Date(); today.setUTCHours(0, 0, 0, 0);
+            let age = today.getUTCFullYear() - selectedDate.getUTCFullYear();
+            let m = today.getUTCMonth() - selectedDate.getUTCMonth();
+            if (m < 0 || (m === 0 && today.getUTCDate() < selectedDate.getUTCDate())) { age--; }
+            if (age < 20 || age > 60) {
+                 showError(input, "Age must be between 20 and 60 years.");
+                 return false;
+            }
+        }
+        return true;
+    }
+    function validateFile(input) {
+        const file = input.files[0];
+        const isRequired = input.required;
+        removeError(input);
+
+        if (file) {
+            const allowedType = "application/pdf";
+            const maxSizeMB = 5;
+            const maxSizeInBytes = maxSizeMB * 1024 * 1024;
+            if (file.type !== allowedType) {
+                showError(input, `Invalid file type. Only PDF files are allowed.`);
+                input.value = ""; return false;
+            }
+            if (file.size > maxSizeInBytes) {
+                 showError(input, `File size exceeds the limit of ${maxSizeMB} MB.`);
+                 input.value = ""; return false;
+            }
+        } else if (isRequired) {
+             // Handled by main validateInput required check
+             // showError(input, "This document is required.");
+             return false;
+        }
+         return true;
+    }
+
+    // --- Error Display ---
+    function showError(input, message) {
+         if (!input || !message) return;
+        const existingError = input.nextElementSibling;
+        if (existingError && existingError.classList.contains('error-message') && existingError.textContent === message) return;
+         removeError(input);
+         input.classList.add('has-error');
+         let errorSpan = document.createElement('span');
+         errorSpan.className = 'error-message';
+         errorSpan.textContent = message;
+         input.parentNode.insertBefore(errorSpan, input.nextSibling);
+    }
+    function removeError(input) {
+         if (!input) return;
+        if (input.classList.contains('has-error')) {
+            input.classList.remove('has-error');
+            let errorSpan = input.nextElementSibling;
+            if (errorSpan && errorSpan.classList.contains('error-message')) {
+                errorSpan.remove();
+            }
+        }
+    }
+
+    // --- Event Listeners Setup ---
+    function attachRealTimeValidation() {
+        form.querySelectorAll('input, select, textarea').forEach(input => {
+            const eventType = (['select-one', 'file', 'date', 'checkbox', 'radio'].includes(input.type)) ? 'change' : 'input';
+            input.addEventListener(eventType, () => validateInput(input));
+            if (['sscYear', 'intermediateYear', 'graduationYear', 'dob', 'interviewDate', 'joiningDate', 'email', 'tel', 'number', 'text'].includes(input.id) || input.pattern || input.type === 'number' || input.type === 'text') {
+                 input.addEventListener('blur', () => validateInput(input));
+            }
+        });
+    }
+    function attachFileValidation() {
+        form.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', function () { validateFile(this); });
+        });
+    }
+
+    // --- Input Restrictions / Formatting ---
+    function restrictInputFormats() {
+        document.querySelectorAll('#sscYear, #intermediateYear, #graduationYear').forEach(input => {
+            input.addEventListener('input', () => { input.value = input.value.replace(/\D/g, '').slice(0, 4); });
+        });
+        const salaryInput = document.getElementById('expectedSalary');
+        if (salaryInput) { salaryInput.addEventListener('input', () => { salaryInput.value = salaryInput.value.replace(/\D/g, '').slice(0, 9); }); }
+        const mobileInput = document.getElementById('mobileNumber');
+        if (mobileInput) { mobileInput.addEventListener('input', () => { mobileInput.value = mobileInput.value.replace(/\D/g, '').slice(0, 10); }); }
+        const expInput = document.getElementById('yearsOfExperience');
+        if (expInput) {
+            expInput.addEventListener('input', () => {
+                let value = expInput.value.replace(/[^\d.]/g, '');
+                let dotIndex = value.indexOf('.');
+                if (dotIndex !== -1) { value = value.substring(0, dotIndex + 1) + value.substring(dotIndex + 1).replace(/\./g, ''); }
+                expInput.value = value.slice(0, 4);
+            });
+        }
+    }
+
+    // --- Conditional Fields ---
+     function toggleExperienceFields() {
+        const experienceStatusSelect = document.getElementById('experienceStatus');
+        const experienceFieldsDiv = document.getElementById('experienceFields');
+        if (!experienceStatusSelect || !experienceFieldsDiv) return;
+         const status = experienceStatusSelect.value;
+         experienceFieldsDiv.style.display = status === 'experience' ? 'block' : 'none';
+         updateExperienceFieldRequirements(status);
+        experienceStatusSelect.addEventListener('change', (event) => {
+            const newStatus = event.target.value;
+            experienceFieldsDiv.style.display = newStatus === 'experience' ? 'block' : 'none';
+            updateExperienceFieldRequirements(newStatus);
+            if (newStatus === 'fresher') {
+                experienceFieldsDiv.querySelectorAll('input, select').forEach(input => {
+                    input.value = ''; if (input.tagName === 'SELECT') input.selectedIndex = 0; removeError(input);
+                });
+            }
+        });
+    }
+    function updateExperienceFieldRequirements(status) {
+         const experienceFieldsDiv = document.getElementById('experienceFields'); if (!experienceFieldsDiv) return;
+         const experienceInputs = experienceFieldsDiv.querySelectorAll('input, select');
+         const isExperience = status === 'experience';
+         experienceInputs.forEach(input => {
+             if (isExperience) { input.setAttribute('required', 'required'); }
+             else { input.removeAttribute('required'); removeError(input); }
+        });
+    }
+
+    // --- Date Constraints Setup ---
+    function setDOBConstraints() {
+        let dobInput = document.getElementById("dob"); if (dobInput) { let today = new Date(), maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()), minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()); dobInput.setAttribute("max", maxDate.toISOString().split("T")[0]); dobInput.setAttribute("min", minDate.toISOString().split("T")[0]); }
+    }
+    function setInterviewDateConstraints() {
+        let input = document.getElementById("interviewDate"); if(input) { let today = new Date(), sixMonthsAgo = new Date(); sixMonthsAgo.setMonth(today.getMonth() - 6); input.setAttribute("min", sixMonthsAgo.toISOString().split("T")[0]); input.setAttribute("max", today.toISOString().split("T")[0]); }
+    }
+    function setJoiningDateConstraints() {
+         let input = document.getElementById("joiningDate"); if(input) { let today = new Date(), fourMonthsAhead = new Date(); fourMonthsAhead.setMonth(today.getMonth() + 4); input.setAttribute("min", today.toISOString().split("T")[0]); input.setAttribute("max", fourMonthsAhead.toISOString().split("T")[0]); }
+    }
+
+    // --- Form Submission Handler ---
+    form.addEventListener('submit', function (event) {
+        console.log("Submit clicked. Final validation...");
+        let isFormValid = true;
+        sections.forEach((section, index) => { if (!validateSection(index)) isFormValid = false; });
+
+        if (!isFormValid) {
+            console.error("Form invalid. Preventing submission.");
+            event.preventDefault();
+            alert("Please review the form and correct errors (marked in red).");
+            const firstError = form.querySelector('.has-error');
+            if (firstError) {
+                const errorSection = firstError.closest('.section');
+                if (errorSection && !errorSection.classList.contains('active')) {
+                     const errorSectionIndex = sections.indexOf(errorSection);
+                     if (errorSectionIndex !== -1) showSection(errorSectionIndex);
+                }
+                setTimeout(() => { // Allow potential section switch
+                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                     firstError.focus({ preventScroll: true });
+                }, 100);
+            }
+        } else {
+            console.log("Form valid. Submitting...");
+             const submitButton = form.querySelector('button[type="submit"]');
+             if(submitButton) { submitButton.disabled = true; submitButton.textContent = 'Submitting...'; }
+        }
+    });
+</script>
+</body>
+</html>

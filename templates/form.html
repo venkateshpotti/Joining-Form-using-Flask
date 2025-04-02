@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Letter Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <div class="banner-background">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+    </div>
+    <h1>Job Application Form</h1>
+    <p>Submit your job application and get the offer letter</p>
+  </header>
+
+<div class="form-container">
+  <div class="forms">
+    <form id="offerLetterForm" method="POST">
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <label for="department">Select Department</label>
+        <select id="department" name="department" required>
+            <option value="" disabled {% if department == '' %}selected{% endif %}>Select Department</option>
+            <option value="HR" {% if department == 'HR' %}selected{% endif %}>Human Resources (HR)</option>
+            <option value="IT" {% if department == 'IT' %}selected{% endif %}>Information Technology (IT)</option>
+            <option value="Finance" {% if department == 'Finance' %}selected{% endif %}>Finance</option>
+            <option value="Marketing" {% if department == 'Marketing' %}selected{% endif %}>Marketing</option>
+            <option value="Sales" {% if department == 'Sales' %}selected{% endif %}>Sales</option>
+            <option value="Operations" {% if department == 'Operations' %}selected{% endif %}>Operations</option>
+            <option value="Customer Support" {% if department == 'Customer Support' %}selected{% endif %}>Customer Support</option>
+        </select>
+
+        <label for="jobRole">Job Role</label>
+        <select id="jobRole" name="jobRole" required>
+            <option value="" disabled {% if jobRole == '' %}selected{% endif %}>Select Job Role</option>
+            <option value="Software Developer" {% if jobRole == 'Software Developer' %}selected{% endif %}>Software Developer</option>
+            <option value="Web Developer" {% if jobRole == 'Web Developer' %}selected{% endif %}>Web Developer</option>
+            <option value="Database Administrator" {% if jobRole == 'Database Administrator' %}selected{% endif %}>Database Administrator</option>
+            <option value="Software Tester" {% if jobRole == 'Software Tester' %}selected{% endif %}>Software Tester</option>
+            <option value="System Administrator" {% if jobRole == 'System Administrator' %}selected{% endif %}>System Administrator</option>
+            <option value="Security Analyst" {% if jobRole == 'Security Analyst' %}selected{% endif %}>Security Analyst</option>
+            <option value="Cloud Engineer" {% if jobRole == 'Cloud Engineer' %}selected{% endif %}>Cloud Engineer</option>
+            <option value="Data Scientist" {% if jobRole == 'Data Scientist' %}selected{% endif %}>Data Scientist</option>
+            <option value="Business Analyst" {% if jobRole == 'Business Analyst' %}selected{% endif %}>Business Analyst</option>
+            <option value="DevOps Engineer" {% if jobRole == 'DevOps Engineer' %}selected{% endif %}>DevOps Engineer</option>
+            <option value="Machine Learning Engineer" {% if jobRole == 'Machine Learning Engineer' %}selected{% endif %}>Machine Learning Engineer</option>
+            <option value="Project Manager" {% if jobRole == 'Project Manager' %}selected{% endif %}>Project Manager</option>
+            <option value="Full Stack Developer" {% if jobRole == 'Full Stack Developer' %}selected{% endif %}>Full Stack Developer</option>
+        </select>
+
+        <label for="branchLocation">Branch Location</label>
+        <select id="branchLocation" name="branchLocation" required>
+            <option value="" disabled {% if branchLocation == '' %}selected{% endif %}>Select Branch Location</option>
+            <option value="Pune Branch" {% if branchLocation == 'Pune Branch' %}selected{% endif %}>Pune</option>
+            <option value="Bangalore Branch" {% if branchLocation == 'Bangalore Branch' %}selected{% endif %}>Bangalore</option>
+            <option value="Hyderabad Branch" {% if branchLocation == 'Hyderabad Branch' %}selected{% endif %}>Hyderabad</option>
+        </select>
+
+        <label for="expectedSalary">Expected Salary</label>
+        <input type="number" id="expectedSalary" name="expectedSalary" value="{{ expectedSalary | default('') }}" required>
+
+        <label for="interviewDate">Interview Date</label>
+        <input type="date" id="interviewDate" name="interviewDate" value="{{ interviewDate | default('') }}" required>
+
+        <label for="joiningDate">Joining Date</label>
+        <input type="date" id="joiningDate" name="joiningDate" value="{{ joiningDate | default('') }}" required>
+
+        <label for="employmentType">Employment Type</label>
+        <select id="employmentType" name="employmentType" required>
+            <option value="" disabled {% if employmentType == '' %}selected{% endif %}>Select Employment Type</option>
+            <option value="Full-Time" {% if employmentType == 'Full-Time' %}selected{% endif %}>Full-Time</option>
+            <option value="Part-Time" {% if employmentType == 'Part-Time' %}selected{% endif %}>Part-Time</option>
+            <option value="Internship" {% if employmentType == 'Internship' %}selected{% endif %}>Internship</option>
+            <option value="Contract" {% if employmentType == 'Contract' %}selected{% endif %}>Contract</option>
+        </select>
+
+        <label for="FullName">Full Name</label>
+        <input type="text" id="FullName" name="FullName" value="{{ FullName | default('') }}" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ email | default('') }}" required>
+
+        <label for="dob">Date of Birth</label>
+        <input type="date" id="dob" name="dob" value="{{ dob | default('') }}" required>
+
+        <label for="mobileNumber">Mobile Number</label>
+        <input type="tel" id="mobileNumber" name="mobileNumber" value="{{ mobileNumber | default('') }}" required>
+
+        <label for="fatherName">Father's Name</label>
+        <input type="text" id="fatherName" name="fatherName" value="{{ fatherName | default('') }}" required>
+
+        <label for="permanentAddress">Permanent Address</label>
+        <input type="text" id="permanentAddress" name="permanentAddress" value="{{ permanentAddress | default('') }}" required>
+
+        <label for="sscYear">SSC Year</label>
+        <input type="number" id="sscYear" name="sscYear" value="{{ sscYear | default('') }}" required>
+
+        <label for="sscPercentage">SSC Percentage</label>
+        <input type="number" id="sscPercentage" name="sscPercentage" value="{{ sscPercentage | default('') }}" required>
+
+        <label for="intermediateYear">Intermediate Year</label>
+        <input type="number" id="intermediateYear" name="intermediateYear" value="{{ intermediateYear | default('') }}" required>
+
+        <label for="intermediatePercentage">Intermediate Percentage</label>
+        <input type="number" id="intermediatePercentage" name="intermediatePercentage" value="{{ intermediatePercentage | default('') }}" required>
+
+        <label for="higherGraduation">Higher Graduation</label>
+        <input type="text" id="higherGraduation" name="higherGraduation" value="{{ higherGraduation | default('') }}" required>
+
+        <label for="registerNumber">Register Number</label>
+        <input type="text" id="registerNumber" name="registerNumber" value="{{ registerNumber | default('') }}" required>
+
+        <label for="graduationYear">Graduation Year</label>
+        <input type="number" id="graduationYear" name="graduationYear" value="{{ graduationYear | default('') }}" required>
+
+        <label for="graduationPercentage">Graduation Percentage</label>
+        <input type="number" id="graduationPercentage" name="graduationPercentage" value="{{ graduationPercentage | default('') }}" required>
+
+        <label for="experienceStatus">Experience Status</label>
+        <select id="experienceStatus" name="experienceStatus" required>
+            <option value="fresher" {% if experienceStatus == 'fresher' %}selected{% endif %}>Fresher</option>
+            <option value="experienced" {% if experienceStatus == 'experienced' %}selected{% endif %}>Experienced</option>
+        </select>
+
+        <button type="submit" class="form-button">Submit</button>
+
+    </form>
+  </div>
+</div>
+</body>
+</html>

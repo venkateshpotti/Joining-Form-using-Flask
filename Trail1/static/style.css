@@ -1,0 +1,446 @@
+/* General Body and Layout */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    display: flex;
+    justify-content: center; /* Center form container horizontally */
+    align-items: center; /* Center form container vertically initially (might push down) */
+    flex-direction: column; /* Stack header and form vertically */
+    margin: 0;
+    background-color: #f0f2f5; /* Lighter grey background */
+    padding-bottom: 50px; /* Space at the bottom */
+    line-height: 1.5;
+}
+
+.form-container, .success-container {
+    width: 90%;
+    max-width: 750px; /* Slightly narrower max width */
+    background-color: #ffffff; /* White background for the form area */
+    padding: 25px 40px 40px 40px; /* Adjusted padding */
+    margin-top: 25px; /* Space below header */
+    border-radius: 12px; /* More rounded corners */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); /* Softer, slightly larger shadow */
+    overflow: visible;
+}
+
+/* Header Styling */
+header {
+    position: relative;
+    text-align: center;
+    height: auto; /* Auto height based on content */
+    padding: 25px 0; /* Padding top/bottom */
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* New Gradient */
+    color: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    width: 95%; /* Slightly less than 100% */
+    max-width: 850px; /* Max width for header */
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    margin-top: 25px; /* Space above header */
+    z-index: 10; /* Ensure header is above background */
+}
+
+header h1 {
+    margin: 0 0 5px 0; /* Space below h1 */
+    font-size: 28px; /* Adjusted size */
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 12;
+}
+
+header p {
+    font-weight: 300; /* Lighter weight */
+    font-size: 15px; /* Adjusted size */
+    margin: 0;
+    position: relative;
+    z-index: 12;
+    opacity: 0.9;
+    max-width: 90%;
+}
+
+/* Animated Background Circles */
+.banner-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 11; /* Below text, above background color */
+    overflow: hidden;
+    opacity: 0.6; /* Make circles more subtle */
+}
+
+.circle {
+    position: absolute;
+    width: 150px; /* Smaller circles */
+    height: 150px;
+    background: rgba(255, 255, 255, 0.1); /* More subtle */
+    border-radius: 50%;
+    animation: moveCircles 15s infinite linear alternate;
+    filter: blur(8px); /* Increased blur */
+    transform-origin: center center;
+}
+
+.circle:nth-child(1) { top: 10%; left: 15%; animation-duration: 12s; }
+.circle:nth-child(2) { top: 55%; left: 70%; animation-duration: 18s; }
+.circle:nth-child(3) { bottom: 5%; left: 40%; animation-duration: 20s; animation-delay: 1s;}
+
+@keyframes moveCircles {
+    0% { transform: translateY(0) translateX(0) scale(0.9) rotate(0deg); }
+    50% { transform: translateY(-40px) translateX(30px) scale(1.1) rotate(180deg); }
+    100% { transform: translateY(0) translateX(0) scale(0.9) rotate(360deg); }
+}
+
+/* Form Specific Styles */
+.forms {
+    margin-top: 20px;
+}
+
+.forms h2 { /* Section Titles */
+    font-size: 1.3em;
+    color: #333;
+    border-bottom: 2px solid #6a11cb; /* Match gradient color */
+    padding-bottom: 8px;
+    margin-bottom: 25px;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+label {
+    display: block;
+    margin-top: 18px; /* Increased space above label */
+    margin-bottom: 6px; /* Space below label */
+    font-size: 0.95em; /* Relative font size */
+    font-weight: 600; /* Slightly bolder */
+    color: #444; /* Darker label color */
+}
+
+label .required-asterisk {
+    color: #dc3545; /* Red asterisk */
+    margin-left: 3px;
+    font-weight: bold;
+}
+label .file-info {
+    font-size: 0.8em;
+    color: #6c757d;
+    font-weight: normal;
+    margin-left: 8px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+select,
+textarea /* Added textarea basic style */
+{
+    width: 100%;
+    padding: 10px 14px; /* Adjusted padding */
+    font-size: 0.95em; /* Relative size */
+    border: 1px solid #ced4da; /* Standard Bootstrap-like border */
+    border-radius: 6px; /* Slightly more rounded */
+    box-sizing: border-box;
+    margin-bottom: 15px; /* Keep space below */
+    background-color: #fff;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+    outline: none;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    color: #333; /* Default text color */
+}
+textarea {
+    min-height: 80px; /* Give textarea some height */
+    resize: vertical; /* Allow vertical resize */
+}
+
+
+input:focus, select:focus, textarea:focus {
+    border-color: #80bdff; /* Light blue focus border */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Matching Bootstrap-like glow */
+}
+/* Input placeholder text */
+::placeholder {
+  color: #a0a0a0;
+  opacity: 1; /* Firefox */
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+ color: #a0a0a0;
+}
+::-ms-input-placeholder { /* Microsoft Edge */
+ color: #a0a0a0;
+}
+
+
+input[type="file"] {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    background-color: #f8f9fa; /* Lighter background for file input */
+    box-shadow: none;
+    width: 100%;
+    box-sizing: border-box;
+     margin-top: 4px;
+     margin-bottom: 5px; /* Reduce space below file input to allow info text */
+     font-size: 0.9em;
+     color: #555;
+}
+.file-info { /* Style for the "Max 5MB" text */
+     display: block;
+     font-size: 0.8em;
+     color: #6c757d;
+     margin-bottom: 15px; /* Space below the info text */
+     margin-top: -2px; /* Pull slightly closer to input */
+}
+
+
+input[type="file"]::-webkit-file-upload-button {
+    padding: 7px 12px;
+    background-color: #6c757d; /* Greyish button */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-right: 10px;
+    font-size: 0.9em;
+}
+input[type="file"]::-moz-file-upload-button { /* Firefox */
+     padding: 7px 12px;
+     background-color: #6c757d;
+     color: white;
+     border: none;
+     border-radius: 4px;
+     cursor: pointer;
+     transition: background-color 0.2s ease;
+     margin-right: 10px;
+     font-size: 0.9em;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #5a6268; /* Darker grey on hover */
+}
+input[type="file"]::-moz-file-upload-button:hover {
+     background-color: #5a6268;
+}
+
+
+/* Button Styling */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px; /* More space above buttons */
+    padding-top: 20px; /* Space within button container */
+    border-top: 1px solid #e9ecef; /* Lighter separator line */
+}
+
+/* General Button Styles */
+.button-container button, .form-button {
+    color: white;
+    padding: 10px 18px; /* Adjusted padding */
+    border: none;
+    border-radius: 6px;
+    font-size: 1em; /* Relative size */
+    font-weight: 500; /* Medium weight */
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    min-width: 130px; /* Minimum width */
+    display: inline-flex; /* Align icon/text */
+    align-items: center;
+    justify-content: center;
+    gap: 6px; /* Space between text and arrow */
+}
+.button-container button .arrow {
+     font-size: 1.2em;
+     line-height: 1;
+}
+
+
+/* Specific Button Colors */
+.nav-button { /* For Previous/Next */
+     background: linear-gradient(135deg, #566573, #2C3E50); /* Dark Grey/Blue gradient */
+     flex-grow: 0.48; /* Allow buttons to grow */
+     max-width: 200px;
+}
+.form-button { /* For final Submit */
+     background: linear-gradient(135deg, #28a745, #218838); /* Green gradient for submit */
+     flex-grow: 0.48;
+     max-width: 250px; /* Submit can be wider */
+}
+.form-button[href] { /* Style link like a button */
+     text-decoration: none;
+}
+
+/* Single button alignment (e.g., first next button) */
+#next1 {
+    justify-content: flex-end;
+    border-top: none; /* Remove top border for the very first button container */
+    padding-top: 0;
+}
+#next1 button {
+     flex-grow: 0; /* Don't allow the single next button to grow */
+     min-width: 130px;
+     max-width: 160px;
+}
+
+/* Button Hover/Active States */
+.button-container button:hover, .form-button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.button-container button:active, .form-button:active {
+    transform: translateY(0px); /* Press down effect */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.button-container button:disabled, .form-button:disabled {
+    background: #adb5bd; /* Disabled color */
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* Form Section Visibility & Animation */
+.section {
+    display: none; /* Hide sections by default */
+    animation: fadeInSection 0.6s ease-in-out forwards; /* Fade in animation */
+}
+.section.active {
+    display: block; /* Show active section */
+}
+
+@keyframes fadeInSection {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Client-Side Error Styling (JS adds/removes this class) */
+.has-error {
+    border-color: #dc3545 !important; /* Red border for error */
+    background-color: #fff8f8; /* Very light pink background */
+}
+/* Make focus glow red for errors too */
+.has-error:focus {
+     border-color: #dc3545 !important;
+     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+
+/* Error Message Styling (Span added by JS) */
+.error-message {
+    color: #dc3545; /* Red color for error text */
+    font-size: 0.85em; /* Slightly smaller */
+    margin-top: -10px; /* Pull up closer to the input */
+    margin-bottom: 10px; /* Space below error message */
+    display: block; /* Ensure it takes space */
+    padding-left: 2px; /* Slight indent */
+}
+
+/* Server-Side Error Message Styling (Div in HTML) */
+.server-error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 12px 18px; /* Adjusted padding */
+    border-radius: 6px;
+    margin-bottom: 25px; /* More space below */
+    text-align: center;
+    font-size: 0.95em;
+}
+
+/* Flashed Messages Styling (e.g., for success on redirect) */
+/* Defined in success.html inline styles, but could be moved here */
+.flash-message {
+     padding: 15px 20px;
+     margin-bottom: 20px;
+     border: 1px solid transparent;
+     border-radius: 8px;
+     font-weight: 500; /* Medium weight */
+     text-align: center;
+     font-size: 1em;
+}
+.flash-message.success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+.flash-message.warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+.flash-message.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* Small helper span styles from original HTML */
+label span { /* General spans within labels */
+    font-size: 0.9em; /* Relative size */
+    color: #6c757d; /* Grey color for hints */
+    font-weight: normal; /* Normal weight for hints */
+}
+
+/* Responsive Adjustments (Example) */
+@media (max-width: 600px) {
+    .form-container, .success-container {
+        width: 95%;
+        padding: 20px 25px;
+    }
+     header {
+         width: 98%;
+         padding: 20px 0;
+     }
+    header h1 {
+        font-size: 24px;
+    }
+    header p {
+        font-size: 14px;
+    }
+    .button-container {
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 10px; /* Space between stacked buttons */
+        align-items: stretch; /* Make buttons full width */
+    }
+     .button-container button, .form-button {
+         max-width: none; /* Allow full width */
+         width: 100%;
+     }
+     #next1 {
+         align-items: stretch; /* Ensure single button stretches too */
+     }
+     #next1 button {
+         max-width: none;
+     }
+     /* Reorder buttons on mobile: Previous below Next/Submit */
+     .button-container button:first-child:not(:only-child) { /* Target first button IF NOT only child */
+          order: 2; /* Move previous button below */
+     }
+      .button-container button:last-child:not(:only-child) { /* Target last button IF NOT only child */
+          order: 1; /* Move next/submit button above */
+     }
+     /* Success page list layout adjustment */
+     .summary-list li {
+         flex-direction: column;
+         align-items: start;
+         gap: 4px;
+     }
+      .summary-list li b {
+         min-width: auto; /* Remove min-width on small screens */
+         margin-bottom: 2px;
+     }
+      .summary-list li span {
+          text-align: left; /* Ensure value aligns left */
+          width: 100%; /* Take full width */
+     }
+}
