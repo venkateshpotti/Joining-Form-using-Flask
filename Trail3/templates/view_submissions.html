@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View WFH Requests</title>
+    <!-- Link CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/view_style.css') }}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="banner-background">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <h1>Employee WFH Requests Management</h1>
+        <p>Review and manage submitted work from home requests.</p>
+        <!-- Link back to form page -->
+        <a href="{{ url_for('index') }}" style="color: #fff; margin-top: 15px; text-decoration: underline; z-index: 2;">Submit a New Request</a>
+    </header>
+
+    <div class="cards-container" id="submissionList">
+        <!-- Jinja loop renders requests passed from Flask -->
+        {% if requests %}
+            {% for req in requests %}
+            <!-- Use MongoDB _id as the unique identifier -->
+            <div class="submission-item" data-request-id="{{ req._id }}">
+                <!-- Use the correct field names from MongoDB document -->
+                <p><strong class="label">Name:</strong><span class="value">{{ req.name }}</span></p>
+                <p><strong class="label">Employee ID:</strong><span class="value">{{ req.employeeId }}</span></p>
+                <p><strong class="label">Email:</strong><span class="value">{{ req.email }}</span></p>
+                <p><strong class="label">Project:</strong><span class="value">{{ req.project }}</span></p>
+                <p><strong class="label">Manager:</strong><span class="value">{{ req.manager }}</span></p>
+                <p><strong class="label">WFH Location:</strong><span class="value">{{ req.location }}</span></p>
+                <p><strong class="label">From Date:</strong><span class="value">{{ req.fromDate }}</span></p>
+                <p><strong class="label">To Date:</strong><span class="value">{{ req.toDate }}</span></p>
+                <p><strong class="label">Reason:</strong><span class="value">{{ req.reason }}</span></p>
+                <p><strong class="label">Submitted:</strong><span class="value">{{ req.submittedAt.strftime('%Y-%m-%d %H:%M:%S') if req.submittedAt else 'N/A' }} UTC</span></p> <!-- Format date -->
+
+                <!-- Status Display -->
+                 <p class="status-line"><strong class="label">Status:</strong>
+                    <span class="status {{ req.status }}" id="status-{{ req._id }}">{{ req.status }}</span>
+                 </p>
+
+                <!-- Action Buttons Area - only show if status is Pending -->
+                <div class="actions-area" id="actions-{{ req._id }}">
+                    {% if req.status == 'Pending' %}
+                    <!-- Pass MongoDB _id to JS functions -->
+                    <button class="action-btn approve-btn" onclick="confirmAction('Approved', '{{ req._id }}')">
+                        <i class="fas fa-check"></i> Approve
+                    </button>
+                    <button class="action-btn reject-btn" onclick="confirmAction('Rejected', '{{ req._id }}')">
+                         <i class="fas fa-times"></i> Reject
+                    </button>
+                    {% else %}
+                     <!-- Indicate that action was taken -->
+                     <!-- <span style="color: #555; font-style: italic;">Action Taken</span> -->
+                    {% endif %}
+                </div>
+
+                <!-- Confirmation Area (hidden) -->
+                <div class="confirmation-area" id="confirm-{{ req._id }}" style="display:none;">
+                    <p id="confirm-message-{{ req._id }}"></p>
+                    <div class="confirmation-buttons">
+                        <button class="action-btn confirm-btn" onclick="executeAction('{{ req._id }}')">Yes</button>
+                        <button class="action-btn cancel-btn" onclick="cancelAction('{{ req._id }}')">No</button>
+                    </div>
+                </div>
+                 <!-- Message Area for action results -->
+                <p class="action-result" id="result-{{ req._id }}" style="text-align: center; margin-top: 10px; font-weight: bold; min-height: 1.2em;"></p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Display if no requests list was passed or it's empty -->
+             <div class="no-data">
+                 <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="Empty clipboard" class="no-data-img">
+                 <h3>No Requests Found</h3>
+                 <p>There are currently no work from home requests to display.</p>
+            </div>
+        {% endif %}
+
+        <!-- Display general error message from Flask if any (e.g., DB connection error) -->
+        {% if error %}
+            <p style="color: red; text-align: center; width: 100%; background-color: #fdd; padding: 10px; border-radius: 5px; margin-top: 20px;">Error: {{ error }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        // Global variable to store the action details temporarily
+        let pendingAction = {}; // Use an object: { requestId: 'action' }
+
+        function confirmAction(action, requestId) {
+            // Hide all other confirmation prompts first
+            document.querySelectorAll('.confirmation-area').forEach(el => el.style.display = 'none');
+            // Clear previous result messages
+            document.querySelectorAll('.action-result').forEach(el => el.textContent = '');
+
+            const confirmDiv = document.getElementById(`confirm-${requestId}`);
+            const confirmMessage = document.getElementById(`confirm-message-${requestId}`);
+            const actionButtonsDiv = document.getElementById(`actions-${requestId}`);
+
+            if (!confirmDiv || !confirmMessage) {
+                console.error("Confirmation elements not found for ID:", requestId);
+                return;
+            }
+
+            // Store the action and ID
+            pendingAction[requestId] = action;
+
+            confirmMessage.textContent = `Are you sure you want to ${action.toLowerCase()} this request?`;
+            confirmDiv.style.display = 'block'; // Show this confirmation
+
+            // Optional: Hide Approve/Reject buttons while confirming
+            if(actionButtonsDiv) actionButtonsDiv.style.display = 'none';
+        }
+
+        function cancelAction(requestId) {
+            const confirmDiv = document.getElementById(`confirm-${requestId}`);
+            const actionButtonsDiv = document.getElementById(`actions-${requestId}`);
+
+            if (confirmDiv) confirmDiv.style.display = 'none';
+
+            // Optional: Show Approve/Reject buttons again if they were hidden
+             if(actionButtonsDiv) actionButtonsDiv.style.display = 'flex'; // Or 'block' depending on your layout
+
+            delete pendingAction[requestId]; // Remove the pending action
+        }
+
+        async function executeAction(requestId) {
+            const actionToExecute = pendingAction[requestId];
+            if (!actionToExecute) {
+                console.error('No action pending for request ID:', requestId);
+                return; // Should not happen if UI is correct
+            }
+
+            const confirmDiv = document.getElementById(`confirm-${requestId}`);
+            const resultDiv = document.getElementById(`result-${requestId}`);
+            const yesButton = confirmDiv.querySelector('.confirm-btn');
+            const noButton = confirmDiv.querySelector('.cancel-btn');
+
+
+            // Disable buttons during processing
+            if (yesButton) yesButton.disabled = true;
+            if (noButton) noButton.disabled = true;
+            if (resultDiv) {
+                 resultDiv.textContent = 'Processing...';
+                 resultDiv.style.color = '#555'; // Neutral color
+            }
+
+            console.log(`Sending request to update status for ${requestId} to ${actionToExecute}`);
+
+            try {
+                // Send request to the Flask backend endpoint
+                const response = await fetch(`/update_status/${requestId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    // Send the desired new status in the body
+                    body: JSON.stringify({ status: actionToExecute }),
+                });
+
+                const result = await response.json(); // Parse the JSON response from Flask
+
+                if (response.ok && result.success) {
+                    // --- Success ---
+                     if (resultDiv) {
+                         resultDiv.textContent = result.message || `Request ${actionToExecute.toLowerCase()} successfully!`;
+                         resultDiv.style.color = (actionToExecute === 'Approved') ? 'green' : '#dc3545'; // Green for approve, red for reject
+                    }
+
+                    // Update the status text on the card
+                    const statusSpan = document.getElementById(`status-${requestId}`);
+                    if (statusSpan) {
+                        statusSpan.textContent = actionToExecute;
+                        statusSpan.className = `status ${actionToExecute}`; // Update class for correct styling
+                    }
+
+                    // Hide the confirmation area
+                    if (confirmDiv) confirmDiv.style.display = 'none';
+
+                    // Remove the original Approve/Reject buttons permanently
+                    const actionsDiv = document.getElementById(`actions-${requestId}`);
+                    if (actionsDiv) actionsDiv.innerHTML = `<span style="color: #555; font-style: italic;">Action Taken</span>`; // Replace buttons
+
+                } else {
+                    // --- Failure ---
+                     if (resultDiv) {
+                         resultDiv.textContent = `Error: ${result.message || 'Failed to update status.'}`;
+                         resultDiv.style.color = 'red';
+                    }
+                     console.error('Server returned error:', result);
+                    // Re-enable confirmation buttons on failure to allow retry?
+                     if (yesButton) yesButton.disabled = false;
+                     if (noButton) noButton.disabled = false;
+                    // Optionally hide confirmDiv again, or leave it for user to cancel
+                     // if (confirmDiv) confirmDiv.style.display = 'none';
+                }
+
+            } catch (error) {
+                // --- Network or other fetch error ---
+                if (resultDiv) {
+                     resultDiv.textContent = 'Network error or server unavailable. Please try again.';
+                     resultDiv.style.color = 'red';
+                }
+                 console.error('Fetch error during status update:', error);
+                // Re-enable confirmation buttons on fetch error
+                 if (yesButton) yesButton.disabled = false;
+                 if (noButton) noButton.disabled = false;
+
+            } finally {
+                 delete pendingAction[requestId]; // Clean up pending action regardless of outcome
+                 // Ensure buttons are re-enabled if they weren't handled in error cases explicitly
+                 if (yesButton && yesButton.disabled) yesButton.disabled = false;
+                 if (noButton && noButton.disabled) noButton.disabled = false;
+
+            }
+        }
+
+        // No need for the old localStorage-based functions (approveSubmission, rejectSubmission, backToForm)
+        // The page now relies on fetching data from Flask and sending updates via fetch.
+    </script>
+    </body>
+    </html>

@@ -1,0 +1,362 @@
+/* static/css/style.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; /* Let content flow naturally */
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5; /* Default light background */
+    padding-bottom: 80px; /* Space for theme toggle */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+    position: relative;
+    text-align: center;
+    height: auto; /* Auto height */
+    min-height: 120px;
+    background-color: #5f06a8;
+    color: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    display: flex;
+    width: 95%; /* Slightly less width */
+    max-width: 1200px; /* Max width */
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px; /* Add space above header */
+    margin-bottom: 25px; /* Space below header */
+    padding: 20px; /* Add padding */
+    z-index: 10; /* Ensure header is above background */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem; /* Slightly adjusted */
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 2;
+}
+header p {
+    font-weight: 300; /* Lighter weight */
+    font-size: 1.1rem; /* Adjusted */
+    margin-top: 10px;
+    z-index: 2;
+    opacity: 0.9;
+}
+
+/* --- Circle Animation (Keep as is) --- */
+@keyframes moveCircles {
+    0% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-50%) translateX(-50%); }
+    100% { transform: translateY(0) translateX(0); }
+}
+.banner-background {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1; overflow: hidden;
+}
+.circle {
+    position: absolute; width: 200px; height: 200px;
+    background: rgba(255, 255, 255, 0.08); /* Subtler */
+    border-radius: 50%; animation: moveCircles 10s infinite linear;
+}
+.circle:nth-child(1) { top: 10%; left: 20%; animation-duration: 8s; }
+.circle:nth-child(2) { top: 50%; left: 70%; animation-duration: 12s; }
+.circle:nth-child(3) { top: 80%; left: 40%; animation-duration: 15s; }
+/* --- End Circle Animation --- */
+
+
+.form-container {
+    width: 90%;
+    max-width: 900px; /* Max width for form */
+    height: auto;
+    background-color: #fff;
+    padding: 30px 40px; /* More horizontal padding */
+    display: flex;
+    flex-direction: column;
+    gap: 25px; /* Increased gap */
+    margin-bottom: 30px; /* More space below form */
+    border-radius: 15px; /* Less rounded */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); /* Softer shadow */
+    position: relative;
+    /* background: linear-gradient(135deg, #eef2f7, #f8faff); /* Smoother gradient */
+    background: #ffffff; /* Simple white */
+    border: 1px solid #e0e4e8;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.form-container h2 {
+    text-align: center;
+    font-size: 1.8rem; /* Smaller heading */
+    color: #333;
+    font-family: sans-serif;
+    /* animation: headingMotion 5s ease-in-out infinite; */ /* Remove distracting animation */
+    width: 100%;
+    margin-bottom: 15px; /* Reduced margin */
+    font-weight: 600;
+    transition: color 0.3s;
+}
+/* Removed keyframes for headingMotion */
+
+form {
+    width: 100%;
+}
+
+label {
+    font-weight: 600; /* Slightly bolder label */
+    margin-top: 15px;
+    margin-bottom: 5px; /* Space below label */
+    display: block;
+    font-size: 0.95rem; /* Slightly smaller label */
+    color: #444;
+    transition: color 0.3s;
+}
+
+.input-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px; /* Consistent gap */
+    width: 100%;
+    margin-bottom: 10px; /* Space between groups */
+}
+
+.input-group > div {
+    flex: 1 1 45%; /* Allow flex grow/shrink, base width ~45% */
+    min-width: 250px; /* Prevent excessive shrinking */
+}
+
+.input-group input,
+.input-group textarea {
+    width: 100%;
+    padding: 12px 15px; /* Adjusted padding */
+    margin-top: 5px; /* Space between label and input */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background-color: #f9fafb; /* Very light background */
+    transition: border-color 0.3s ease, background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    color: #333;
+}
+.input-group input:focus,
+.input-group textarea:focus {
+    border-color: #5f06a8;
+    outline: none;
+    background-color: #fff;
+    box-shadow: 0 0 0 2px rgba(95, 6, 168, 0.15); /* Focus ring */
+}
+
+/* Style invalid inputs */
+.input-group input:invalid:not(:placeholder-shown),
+.input-group textarea:invalid:not(:placeholder-shown) {
+     border-color: #dc3545; /* Red border for invalid */
+     /* background-color: #fdd; /* Optional light red background */
+}
+
+
+#reason { /* Specific styling for textarea if needed */
+    width: 100%; /* Take full width of its container */
+    height: 100px;
+    resize: vertical; /* Allow vertical resize */
+}
+
+/* Ensure #reason is targeted correctly if not inside an input-group div */
+/* Example: If <label> and <textarea> are direct children of <form> */
+form > label[for="reason"] + #reason {
+     width: 100%;
+     /* Other styles for #reason */
+}
+
+
+button[type="submit"] {
+    --color: #560bad;
+    --bg-color: #fff;
+    font-family: inherit;
+    display: block; /* Block for centering */
+    width: auto; /* Auto width */
+    min-width: 180px; /* Minimum width */
+    padding: 0 30px; /* Horizontal padding */
+    height: 45px; /* Fixed height */
+    line-height: 41px; /* Adjust for border */
+    margin: 30px auto 10px auto; /* Center */
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border: 2px solid var(--color);
+    transition: color 0.4s, background-color 0.4s;
+    z-index: 1;
+    font-size: 1.1rem; /* Adjusted size */
+    border-radius: 8px;
+    font-weight: 500;
+    color: var(--color);
+    background-color: var(--bg-color);
+    text-align: center;
+}
+button[type="submit"]:before { /* Hover effect */
+    content: "";
+    position: absolute;
+    z-index: -1;
+    background: var(--color);
+    height: 100%; /* Cover full height */
+    width: 0; /* Start with no width */
+    top: 0;
+    left: 0;
+    border-radius: 6px; /* Match button radius */
+    transition: width 0.4s ease-in-out;
+}
+button[type="submit"]:hover {
+    color: var(--bg-color);
+    background-color: transparent; /* Let ::before show through */
+}
+button[type="submit"]:hover:before {
+    width: 100%; /* Expand width on hover */
+}
+
+button[type="submit"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    background-color: #eee;
+    border-color: #ccc;
+    color: #888;
+}
+button[type="submit"]:disabled:hover:before {
+    width: 0; /* Prevent hover effect when disabled */
+}
+
+
+/* Error Messages */
+.error-message {
+    color: #dc3545; /* Red error color */
+    font-size: 0.85rem;
+    margin-top: 5px; /* Space above message */
+    display: none; /* Hidden by default */
+    width: 100%;
+}
+
+/* --- REMOVED styles for .submissions-container, cards-section, .submission-card --- */
+/* --- REMOVED styles for .modal, .popup --- */
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+.dark-mode header {
+    background-color: #1f1f1f;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+}
+.dark-mode header h1 { color: #bb86fc; }
+.dark-mode header p { color: #b0b0b0; }
+.dark-mode .circle { background: rgba(187, 134, 252, 0.08); }
+.dark-mode .form-container {
+    background: #1e1e1e;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+}
+.dark-mode .form-container h2 { color: #bb86fc; }
+.dark-mode label { color: #b0b0b0; }
+.dark-mode .input-group input,
+.dark-mode .input-group textarea {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+.dark-mode .input-group input:focus,
+.dark-mode .input-group textarea:focus {
+    border-color: #bb86fc;
+    background-color: #333;
+    box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.2); /* Purple focus ring */
+}
+
+.dark-mode .input-group input:invalid:not(:placeholder-shown),
+.dark-mode .input-group textarea:invalid:not(:placeholder-shown) {
+     border-color: #f44336; /* Dark mode red */
+}
+
+
+.dark-mode button[type="submit"] {
+    --color: #bb86fc; /* Purple */
+    --bg-color: #1e1e1e; /* Dark background */
+    color: #bb86fc; /* Purple text */
+    border-color: #bb86fc;
+}
+.dark-mode button[type="submit"]:hover {
+    color: #121212; /* Dark text on hover */
+}
+.dark-mode button[type="submit"]:disabled {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #777;
+}
+
+.dark-mode .error-message { color: #f44336; } /* Dark mode error color */
+
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #fff;
+    color: #5f06a8;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    padding: 8px 12px;
+    cursor: pointer;
+    z-index: 1001; /* Ensure it's above other elements */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+.dark-mode .theme-toggle {
+    background: #333;
+    color: #bb86fc;
+    border-color: #555;
+}
+.theme-toggle svg {
+    width: 18px; height: 18px; fill: currentColor;
+}
+.dark-icon { display: none; }
+.light-icon { display: inline; }
+.dark-mode .dark-icon { display: inline; }
+.dark-mode .light-icon { display: none; }
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    .input-group > div {
+        flex-basis: 100%; /* Stack inputs on smaller screens */
+        min-width: unset;
+    }
+    header h1 { font-size: 1.8rem; }
+    header p { font-size: 1rem; }
+    .form-container { padding: 25px 20px; }
+}
+@media screen and (max-width: 480px) {
+    body { padding-bottom: 70px; } /* More space for toggle */
+    header h1 { font-size: 1.5rem; }
+    header p { font-size: 0.9rem; }
+    .form-container { padding: 20px 15px; border-radius: 10px; gap: 15px; }
+    label { font-size: 0.9rem; }
+    .input-group input, .input-group textarea { font-size: 0.95rem; padding: 10px 12px;}
+    button[type="submit"] { font-size: 1rem; height: 40px; line-height: 36px; min-width: 150px;}
+    .theme-toggle { padding: 6px 10px; font-size: 12px;}
+    .theme-toggle svg { width: 16px; height: 16px; }
+
+}

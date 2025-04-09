@@ -1,0 +1,332 @@
+/* static/css/view_style.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f7f6; /* Light background */
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+    position: relative;
+    text-align: center;
+    height: auto; /* Adjust height based on content */
+    min-height: 140px;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: #f8f9fa;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    width: 100%; /* Take full width */
+    max-width: 1200px; /* Limit max width */
+    margin: 20px auto 30px auto; /* Center header */
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 25px 20px; /* Increased padding */
+    z-index: 10;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.2rem; /* Adjusted */
+    font-weight: 700;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header p {
+    font-weight: 300;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    max-width: 700px;
+    opacity: 0.9;
+    z-index: 2;
+}
+
+/* --- Circle Animation --- */
+@keyframes moveCircles {
+    0% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-50%) translateX(-50%); }
+    100% { transform: translateY(0) translateX(0); }
+}
+.banner-background {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1; overflow: hidden;
+}
+.circle {
+    position: absolute; width: 200px; height: 200px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%; animation: moveCircles 10s infinite linear;
+}
+.circle:nth-child(1) { top: 10%; left: 20%; animation-duration: 8s; }
+.circle:nth-child(2) { top: 50%; left: 70%; animation-duration: 12s; }
+.circle:nth-child(3) { top: 80%; left: 40%; animation-duration: 15s; }
+/* --- End Circle Animation --- */
+
+/* Link style in header */
+header a {
+    color: #ffffff !important; /* Ensure visibility */
+    margin-top: 15px;
+    text-decoration: underline;
+    z-index: 2;
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+header a:hover {
+    opacity: 1;
+}
+
+
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px; /* Spacing between cards */
+    padding: 10px 0;
+    justify-content: center; /* Center cards horizontally */
+    max-width: 1300px; /* Limit overall container width */
+    margin: 0 auto; /* Center the container itself */
+}
+
+.submission-item {
+    background: #ffffff;
+    padding: 20px 25px; /* More horizontal padding */
+    width: 100%; /* Default full width */
+    max-width: 420px; /* Max width for readability */
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07); /* Slightly softer shadow */
+    margin-bottom: 25px;
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.submission-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid layout for label/value pairs */
+.submission-item p {
+    display: grid;
+    grid-template-columns: 130px 1fr; /* Fixed label width, flexible value */
+    gap: 8px; /* Space between label and value */
+    font-size: 0.95rem;
+    color: #333;
+    margin: 7px 0; /* Vertical spacing between rows */
+    align-items: start; /* Align top */
+    line-height: 1.4; /* Readability */
+}
+
+.submission-item strong.label {
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap; /* Prevent wrapping */
+    position: relative; /* For pseudo-element colon */
+    padding-right: 5px;
+}
+
+/* Optional: Add colon using CSS pseudo-element if needed
+.submission-item strong.label::after {
+    content: ":";
+    position: absolute;
+    right: 0;
+}
+*/
+
+.submission-item span.value {
+    text-align: left;
+    color: #222;
+    word-break: break-word; /* Wrap long content */
+}
+
+/* Status Display Styles */
+.submission-item p.status-line {
+    margin-top: 18px; /* Space above status */
+    padding-top: 12px; /* Space below separator */
+    border-top: 1px solid #eee; /* Separator line */
+    grid-template-columns: 130px 1fr; /* Align with other rows */
+}
+.submission-item span.status {
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 15px; /* Pill shape */
+    font-size: 0.9rem;
+    display: inline-block;
+    text-align: center;
+    min-width: 80px; /* Ensure consistent width */
+}
+.submission-item span.status.Pending {
+    color: #8a6d3b; background-color: #fcf8e3; border: 1px solid #faebcc;
+}
+.submission-item span.status.Approved {
+    color: #3c763d; background-color: #dff0d8; border: 1px solid #d6e9c6;
+}
+.submission-item span.status.Rejected {
+    color: #a94442; background-color: #f2dede; border: 1px solid #ebccd1;
+}
+
+/* Action Buttons Area */
+.actions-area {
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: center; /* Center buttons */
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.action-btn { /* Base button style */
+    padding: 9px 20px; /* Slightly larger padding */
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-radius: 6px; /* Slightly more rounded */
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    color: white;
+    min-width: 100px; /* Min width */
+    text-align: center;
+    font-weight: 500;
+    display: inline-flex; /* Align icon and text */
+    align-items: center;
+    justify-content: center;
+    gap: 6px; /* Space between icon and text */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.action-btn:hover {
+    opacity: 0.9;
+     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+.action-btn:active {
+    transform: scale(0.97);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+.action-btn i { /* Icon style */
+    margin-right: 4px; /* Adjust spacing if gap not supported well */
+}
+
+.approve-btn { background-color: #28a745; }
+.approve-btn:hover { background-color: #218838; }
+
+.reject-btn { background-color: #dc3545; }
+.reject-btn:hover { background-color: #c82333; }
+
+/* Confirmation Area */
+.confirmation-area {
+    margin-top: 15px;
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+.confirmation-area p {
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    grid-template-columns: auto; /* Reset grid */
+    color: #333;
+}
+.confirmation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+/* Use .action-btn base style for confirm/cancel */
+.confirm-btn { background-color: #007bff; }
+.confirm-btn:hover { background-color: #0056b3; }
+
+.cancel-btn { background-color: #6c757d; }
+.cancel-btn:hover { background-color: #5a6268; }
+
+/* Action Result Message */
+.action-result {
+    min-height: 1.2em; /* Prevent layout shift */
+    font-size: 0.9rem;
+}
+
+
+/* No Data Styles */
+.no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 60px auto; /* More vertical margin */
+    width: 100%;
+    padding: 20px;
+    grid-column: 1 / -1; /* Span full width if container is grid */
+}
+.no-data-img {
+    width: 160px;
+    height: auto;
+    opacity: 0.6;
+    margin-bottom: 25px;
+}
+.no-data h3 {
+    font-size: 1.5rem;
+    color: #6c757d;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+.no-data p {
+    font-size: 1rem;
+    color: #6c757d;
+    opacity: 0.8;
+    max-width: 500px;
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 992px) {
+    .submission-item { max-width: calc(50% - 40px); } /* Two cards per row roughly */
+}
+
+@media screen and (max-width: 768px) {
+    header h1 { font-size: 1.8rem; }
+    header p { font-size: 1rem; }
+    .cards-container { gap: 20px; }
+    .submission-item { max-width: 90%; padding: 18px; } /* Wider on tablets */
+    .submission-item p { grid-template-columns: 110px 1fr; font-size: 0.9rem; }
+    .action-btn { font-size: 0.85rem; padding: 8px 16px; min-width: 90px; }
+}
+
+@media screen and (max-width: 480px) {
+     body { margin: 10px; }
+     header { padding: 20px 15px; margin-left: 5px; margin-right: 5px; width: calc(100% - 10px); }
+     header h1 { font-size: 1.5rem; }
+     header p { font-size: 0.9rem; }
+    .cards-container { gap: 15px; }
+    .submission-item { padding: 15px; border-radius: 8px; max-width: 100%; /* Full width */ }
+    .submission-item p { grid-template-columns: 90px 1fr; font-size: 0.85rem; gap: 5px; margin: 5px 0;}
+    .actions-area { gap: 10px; margin-top: 15px; padding-top: 12px; }
+    .action-btn { font-size: 0.8rem; padding: 7px 14px; min-width: 80px; }
+    .no-data-img { width: 120px; }
+    .no-data h3 { font-size: 1.3rem; }
+    .no-data p { font-size: 0.9rem; }
+}
+
+/* Dark Mode (optional - uncomment if needed) */
+/*
+.dark-mode body { background-color: #121212; color: #e0e0e0; }
+.dark-mode header { background: linear-gradient(135deg, #3a0a7a 0%, #1a4f9c 100%); color: #e0e0e0; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
+.dark-mode .submission-item { background: #1e1e1e; border: 1px solid #333; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); }
+.dark-mode .submission-item p { color: #ccc; }
+.dark-mode .submission-item strong.label { color: #aaa; }
+.dark-mode .submission-item span.value { color: #ddd; }
+.dark-mode .submission-item p.status-line, .dark-mode .actions-area { border-top: 1px solid #444; }
+.dark-mode span.status.Pending { color: #ffeb3b; background-color: #3e3c1f; border-color: #605b21; }
+.dark-mode span.status.Approved { color: #81c784; background-color: #1b331c; border-color: #2f5431; }
+.dark-mode span.status.Rejected { color: #e57373; background-color: #371e1e; border-color: #5a3333; }
+.dark-mode .no-data h3, .dark-mode .no-data p { color: #888; }
+.dark-mode .no-data-img { filter: brightness(0.8) contrast(1.2); }
+.dark-mode .confirmation-area { background-color: #2d2d2d; border: 1px solid #444; }
+.dark-mode .confirmation-area p { color: #ccc; }
+*/

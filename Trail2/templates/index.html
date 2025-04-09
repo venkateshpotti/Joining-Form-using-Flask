@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Work from Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="banner-background">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <h1>Work From Home Request Form</h1>
+        <p>Submit and track your WFH requests</p>
+      </header>
+
+    <div class="form-container">
+        <h2>Submit New Request</h2>
+        <form id="wfhForm">
+            <!-- ... (keep all form input fields as they were) ... -->
+             <div class="input-group">
+                <div>
+                    <label for="employeeName">Employee Name:</label>
+                    <input type="text" id="employeeName" placeholder="Enter your Full Name" required minlength="3" maxlength="100"
+                        pattern="^[A-Za-z]+(?:['.\s][A-Za-z]+)*$"
+                        title="Please enter a valid name (letters, spaces, dots, apostrophes allowed).">
+                    <p class="error-message" id="employeeNameError">Invalid name format.</p>
+                </div>
+                <div>
+                    <label for="employeeID">Employee ID:</label>
+                    <input type="text" id="employeeID" placeholder="e.g., ABC1234" required minlength="4"
+                        maxlength="10" pattern="^[A-Za-z0-9]+$"
+                        title="Employee ID should contain letters and numbers (e.g., ABC1234, T45678)">
+                    <p class="error-message" id="employeeIDError">Invalid ID format (letters/numbers only).</p>
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="employeeEmail">Employee Email:</label>
+                    <input type="email" id="employeeEmail" placeholder="your.email@company.com" required
+                        maxlength="50" title="Please enter a valid company email address">
+                    <p class="error-message" id="employeeEmailError">Invalid email address.</p>
+                </div>
+                <div>
+                    <label for="workingProject">Working Project:</label>
+                    <input type="text" id="workingProject" placeholder="e.g., Project Phoenix"
+                        pattern="^[A-Za-z0-9\s.'-]+$" required minlength="3"
+                        maxlength="100" title="Enter the project name (letters, numbers, basic punctuation).">
+                    <p class="error-message" id="workingProjectError">Invalid project name format.</p>
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="reportingManager">Reporting Manager:</label>
+                    <input type="text" id="reportingManager" placeholder="Enter Manager's Full Name"
+                        required minlength="3" maxlength="100"
+                        pattern="^[A-Za-z]+(?:['.\s][A-Za-z]+)*$"
+                        title="Please enter a valid name (letters, spaces, dots, apostrophes allowed).">
+                    <p class="error-message" id="reportingManagerError">Invalid manager name format.</p>
+                </div>
+                <div>
+                    <label for="wfhLocation">WFH Location:</label>
+                    <input type="text" id="wfhLocation" placeholder="e.g., City, State or Home Office"
+                        pattern="^[A-Za-z0-9\s.,'-]+$" required minlength="3"
+                        maxlength="100" title="Enter your work location (city, address details...).">
+                    <p class="error-message" id="wfhLocationError">Invalid location format.</p>
+                </div>
+            </div>
+            <div class="input-group">
+                <div>
+                    <label for="fromDate">From Date:</label>
+                    <input type="date" id="fromDate" required>
+                    <p class="error-message" id="fromDateError">Start date cannot be in the past.</p>
+                </div>
+                <div>
+                    <label for="toDate">To Date:</label>
+                    <input type="date" id="toDate" required>
+                    <p class="error-message" id="toDateError">End date must be after the start date.</p>
+                </div>
+            </div>
+            <label for="reason">Reason for Work from Home:</label>
+            <textarea id="reason" placeholder="Briefly explain the reason for your request (min 10 chars)" required minlength="10"
+                maxlength="300" pattern="^[\s\S]*\S[\s\S]*$" title="Please provide a reason (at least 10 characters)."></textarea>
+            <p class="error-message" id="reasonError">Reason must be at least 10 characters long.</p><br>
+
+            <button type="submit">Submit Request</button>
+        </form>
+         <p id="formMessage" style="text-align: center; margin-top: 15px; font-weight: bold;"></p> <!-- For success/error messages -->
+    </div>
+
+    <div class="submissions-container" id="submissionsContainer">
+        <h1>My Requests</h1>
+        <!-- Display error message from Flask if any -->
+        {% if error %}
+            <p class="error-message" style="display:block; text-align: center; color: red; margin-bottom: 20px;">Error: {{ error }}</p>
+        {% endif %}
+
+        <div class="cards-section" id="submissionsList">
+            <!-- Jinja2 loop to render initial requests -->
+            {% if requests %}
+                {% for req in requests %}
+                    <div class="submission-card" data-reqid="{{ req.reqId }}"> <!-- Add data-reqid if needed for JS interaction -->
+                        <h3>{{ req.name }} (ID: {{ req.employeeId }})</h3>
+                        <p><strong>Project:</strong> {{ req.project }}</p>
+                        <p><strong>Period:</strong> {{ req.fromDate }} to {{ req.toDate }}</p>
+                        <p><strong>Reason:</strong> {{ req.reason }}</p>
+                        <p><strong>Submitted:</strong> {{ req.submittedAt.strftime('%Y-%m-%d %H:%M:%S') if req.submittedAt else 'N/A' }} UTC</p> <!-- Format date -->
+                        <p><strong class="status {{ req.status }}">{{ req.status }}</strong></p>
+                        <!-- Add other actions like delete/edit if needed -->
+                    </div>
+                {% endfor %}
+            {% else %}
+                 <!-- No requests from DB initially (and no connection error) -->
+                <div class="no-data" id="noDataMessage">
+                     <img src="https://cdn-icons-png.flaticon.com/128/1909/1909447.png" alt="Clipboard icon" class="no-data-img">
+                    <p>You haven't submitted any requests yet.</p>
+                </div>
+            {% endif %}
+        </div>
+        <!-- View More/Less button logic might need adjustment depending on how many are loaded initially -->
+        <button class="view-more-btn" id="viewMoreBtn" style="display: none;">Show All Requests</button>
+    </div>
+
+    <!-- Theme Toggle Button (keep as is) -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle light/dark theme">
+        <!-- SVG icons -->
+        <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.939 16.894a.75.75 0 00-1.06 1.06l1.59 1.591a.75.75 0 101.06-1.06l-1.59-1.59zM3 12a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h2.25A.75.75 0 013 12zM6.106 7.166a.75.75 0 00-1.06 1.06l1.591 1.59a.75.75 0 001.06-1.06l-1.59-1.591z"></path></svg>
+        <svg class="dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-3.51 1.713-6.622 4.43-8.564a.75.75 0 01.818.162z" clip-rule="evenodd"></path></svg>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('wfhForm');
+            const submissionsContainer = document.getElementById('submissionsList');
+            const viewMoreBtn = document.getElementById('viewMoreBtn');
+            const themeToggleButton = document.getElementById('themeToggle');
+            const body = document.body;
+            const formMessageEl = document.getElementById('formMessage');
+            const noDataMessageEl = document.getElementById('noDataMessage'); // Get the no-data message div
+
+            // Initial number of requests rendered by Flask (count them)
+            let initialRequestCount = submissionsContainer.children.length - (noDataMessageEl ? 1 : 0); // Subtract noData msg if present
+             // If the only child is the no-data message, count is 0
+            if (initialRequestCount < 0 || (initialRequestCount === 1 && noDataMessageEl)) {
+                initialRequestCount = 0;
+            }
+
+            let showingAll = false; // Track view state for client-side toggle
+
+            // --- Theme Toggling (Keep as is) ---
+            const applyTheme = (isDark) => {
+                if (isDark) {
+                    body.classList.add('dark-mode');
+                } else {
+                    body.classList.remove('dark-mode');
+                }
+                localStorage.setItem('darkMode', isDark); // Still use localStorage for theme
+            };
+            const currentThemeIsDark = localStorage.getItem('darkMode') === 'true';
+            applyTheme(currentThemeIsDark);
+            themeToggleButton.addEventListener('click', () => {
+                applyTheme(!body.classList.contains('dark-mode'));
+            });
+
+            // --- Form Validation (Keep client-side validation as is) ---
+             // Simplified validation function (checks validity state)
+            function checkFieldValidity(input, errorElement) {
+                // Clear previous custom errors
+                input.setCustomValidity('');
+                 errorElement.style.display = 'none';
+                 errorElement.textContent = '';
+
+                 // Basic browser check
+                 if (!input.checkValidity()) {
+                     errorElement.textContent = input.validationMessage; // Use browser's message
+                     errorElement.style.display = 'block';
+                     return false;
+                 }
+
+                 // Specific custom checks (like date order)
+                 if (input.id === 'toDate') {
+                     const fromDate = document.getElementById('fromDate').value;
+                     if (fromDate && input.value <= fromDate) {
+                         const message = 'End date must be after the start date.';
+                         input.setCustomValidity(message);
+                         errorElement.textContent = message;
+                         errorElement.style.display = 'block';
+                         return false;
+                     }
+                 }
+                 if (input.id === 'fromDate') {
+                     const currentDate = new Date();
+                     currentDate.setHours(0,0,0,0);
+                     const selectedDate = new Date(input.value);
+                     if (selectedDate < currentDate) {
+                          const message = 'Start date cannot be in the past.';
+                          input.setCustomValidity(message);
+                          errorElement.textContent = message;
+                          errorElement.style.display = 'block';
+                         return false;
+                     }
+                 }
+
+                return true; // Field is valid
+            }
+
+            const fieldsToValidate = [
+                { id: 'employeeName', errorId: 'employeeNameError' },
+                { id: 'employeeID', errorId: 'employeeIDError' },
+                { id: 'employeeEmail', errorId: 'employeeEmailError' },
+                { id: 'workingProject', errorId: 'workingProjectError' },
+                { id: 'reportingManager', errorId: 'reportingManagerError' },
+                { id: 'wfhLocation', errorId: 'wfhLocationError' },
+                { id: 'fromDate', errorId: 'fromDateError' },
+                { id: 'toDate', errorId: 'toDateError' },
+                { id: 'reason', errorId: 'reasonError' }
+            ];
+
+             fieldsToValidate.forEach(field => {
+                 const input = document.getElementById(field.id);
+                 const errorElement = document.getElementById(field.errorId);
+                 input.addEventListener('input', () => checkFieldValidity(input, errorElement));
+                 // Re-check toDate whenever fromDate changes
+                 if(field.id === 'fromDate') {
+                     input.addEventListener('change', () => {
+                         const toDateInput = document.getElementById('toDate');
+                         const toDateError = document.getElementById('toDateError');
+                         checkFieldValidity(toDateInput, toDateError); // Revalidate toDate
+                     });
+                 }
+             });
+
+            // --- Form Submission ---
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevent default page reload
+                formMessageEl.textContent = ''; // Clear previous messages
+                formMessageEl.style.color = '';
+
+                let isFormValid = true;
+                fieldsToValidate.forEach(field => {
+                    const input = document.getElementById(field.id);
+                    const errorElement = document.getElementById(field.errorId);
+                    if (!checkFieldValidity(input, errorElement)) {
+                        isFormValid = false;
+                    }
+                });
+
+                if (!isFormValid) {
+                    formMessageEl.textContent = 'Please correct the errors above.';
+                    formMessageEl.style.color = 'red';
+                    console.warn('Form validation failed.'); // Debug log
+                    return;
+                }
+
+                // If valid, gather data
+                const formData = {
+                    reqId: 'req_' + Date.now() + Math.random().toString(36).substring(2, 7), // Simple unique ID
+                    name: document.getElementById('employeeName').value.trim(),
+                    id: document.getElementById('employeeID').value.trim(),
+                    email: document.getElementById('employeeEmail').value.trim(),
+                    project: document.getElementById('workingProject').value.trim(),
+                    manager: document.getElementById('reportingManager').value.trim(),
+                    location: document.getElementById('wfhLocation').value.trim(),
+                    from: document.getElementById('fromDate').value,
+                    to: document.getElementById('toDate').value,
+                    reason: document.getElementById('reason').value.trim(),
+                };
+                 console.log('Submitting data:', formData); // Debug log
+
+                // Send data to Flask backend
+                try {
+                    const response = await fetch('/submit_request', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData),
+                    });
+
+                    const result = await response.json(); // Always expect JSON back
+
+                    if (response.ok && result.success) {
+                        formMessageEl.textContent = result.message || 'Request submitted successfully!';
+                        formMessageEl.style.color = 'green';
+                        form.reset(); // Clear the form fields
+                         // Clear validation errors after successful submit
+                        fieldsToValidate.forEach(field => {
+                             document.getElementById(field.errorId).style.display = 'none';
+                        });
+
+                        // Dynamically add the new card to the top of the list
+                        addSubmissionCard(result.request); // Use the data returned from server
+                         initialRequestCount++; // Increment count of total requests
+
+                        // Remove the "No data" message if it exists
+                        if (noDataMessageEl) {
+                            noDataMessageEl.remove();
+                        }
+                        updateViewMoreButtonVisibility(); // Re-check button visibility
+
+                    } else {
+                        // Handle errors from the server
+                         formMessageEl.textContent = `Error: ${result.message || 'Submission failed. Please try again.'}`;
+                         formMessageEl.style.color = 'red';
+                         console.error('Server error:', result); // Debug log
+                    }
+                } catch (error) {
+                     // Handle network errors or issues parsing JSON
+                     formMessageEl.textContent = 'Network error or server issue. Please try again later.';
+                     formMessageEl.style.color = 'red';
+                     console.error('Fetch error:', error); // Debug log
+                }
+            });
+
+            // --- Function to Add a Card Dynamically ---
+            function addSubmissionCard(submissionData) {
+                const card = document.createElement('div');
+                card.className = 'submission-card';
+                card.dataset.reqid = submissionData.reqId; // Set data attribute
+
+                // Format the date nicely (handle potential timezone differences if needed)
+                let submittedDateStr = 'N/A';
+                if (submissionData.submittedAt) {
+                    try {
+                         // Assuming ISO string like "2023-10-27T10:30:00Z"
+                        submittedDateStr = new Date(submissionData.submittedAt).toLocaleString();
+                    } catch(e) { console.error("Error parsing date", e); }
+                }
+
+                 // Map backend keys to frontend display keys if they differ
+                const name = submissionData.name || 'N/A';
+                const employeeId = submissionData.employeeId || submissionData.id || 'N/A'; // Handle potential key name change
+                const project = submissionData.project || 'N/A';
+                const fromDate = submissionData.fromDate || submissionData.from || 'N/A';
+                const toDate = submissionData.toDate || submissionData.to || 'N/A';
+                const reason = submissionData.reason || 'N/A';
+                const status = submissionData.status || 'Pending';
+
+                card.innerHTML = `
+                    <h3>${name} (ID: ${employeeId})</h3>
+                    <p><strong>Project:</strong> ${project}</p>
+                    <p><strong>Period:</strong> ${fromDate} to ${toDate}</p>
+                    <p><strong>Reason:</strong> ${reason}</p>
+                    <p><strong>Submitted:</strong> ${submittedDateStr}</p>
+                    <p><strong class="status ${status}">${status}</strong></p>
+                `;
+                // Add to the beginning of the list
+                submissionsContainer.insertBefore(card, submissionsContainer.firstChild);
+            }
+
+
+             // --- Client-side "Show All" / "Show Recent" Logic ---
+             // This simplistic version hides/shows based on a fixed number (e.g., 3)
+             function toggleVisibleSubmissions() {
+                 const allCards = submissionsContainer.querySelectorAll('.submission-card');
+                 const numToShow = 3; // Number of recent items to show
+
+                 allCards.forEach((card, index) => {
+                     if (showingAll || index < numToShow) {
+                         card.style.display = ''; // Show card
+                     } else {
+                         card.style.display = 'none'; // Hide card
+                     }
+                 });
+
+                 viewMoreBtn.textContent = showingAll ? 'Show Recent Requests' : 'Show All Requests';
+             }
+
+
+             function updateViewMoreButtonVisibility() {
+                  // Use initialRequestCount which is updated after adding cards
+                 if (initialRequestCount > 3) { // Show button if more than 3 exist *in total*
+                     viewMoreBtn.style.display = 'block';
+                 } else {
+                     viewMoreBtn.style.display = 'none';
+                 }
+             }
+
+            viewMoreBtn.addEventListener('click', function () {
+                showingAll = !showingAll; // Toggle state
+                toggleVisibleSubmissions(); // Apply hiding/showing
+            });
+
+
+             // --- Initial Setup ---
+             updateViewMoreButtonVisibility(); // Check button visibility on load
+             if (initialRequestCount > 3) {
+                 toggleVisibleSubmissions(); // Apply initial hide if needed
+             }
+
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>

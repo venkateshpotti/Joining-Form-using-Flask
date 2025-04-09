@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Work from Home</title>
+    <!-- Link CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="banner-background">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <h1>Work From Home Request Form</h1>
+        <p>Submit your request for Work From Home</p>
+         <!-- Link to view requests page -->
+        <a href="{{ url_for('view_requests') }}" style="color: #fff; margin-top: 15px; text-decoration: underline; z-index: 2;">View Submitted Requests</a>
+      </header>
+
+    <div class="form-container">
+        <h2>New WFH Request</h2> <!-- Updated heading -->
+        <form id="wfhForm">
+            <!-- Input Group: Name and ID -->
+            <div class="input-group">
+                <div>
+                    <label for="employeeName">Employee Name:</label>
+                     <!-- Adjusted pattern for more flexibility -->
+                    <input type="text" id="employeeName" placeholder="Enter your Full Name" required minlength="3" maxlength="100"
+                        pattern="^[A-Za-z]+(?:['.\s][A-Za-z]+)*$"
+                        title="Please enter a valid name (letters, spaces, dots, apostrophes allowed).">
+                    <p class="error-message" id="employeeNameError">Invalid name format.</p>
+                </div>
+                <div>
+                    <label for="employeeID">Employee ID:</label>
+                     <!-- Use a more flexible ID pattern, adjust if your company has a strict format -->
+                    <input type="text" id="employeeID" placeholder="e.g., ABC1234 / T12345" required minlength="4"
+                        maxlength="10" pattern="^[A-Za-z0-9]+$"
+                        title="Employee ID should contain letters and numbers">
+                    <p class="error-message" id="employeeIDError">Invalid ID format (letters/numbers only).</p>
+                </div>
+            </div>
+
+            <!-- Input Group: Email and Project -->
+            <div class="input-group">
+                <div>
+                    <label for="employeeEmail">Employee Email:</label>
+                    <!-- Using type="email" provides browser validation -->
+                    <input type="email" id="employeeEmail" placeholder="your.email@company.com" required
+                           maxlength="60" title="Please enter a valid company email address">
+                    <p class="error-message" id="employeeEmailError">Invalid email address format.</p>
+                </div>
+                <div>
+                    <label for="workingProject">Working Project:</label>
+                    <input type="text" id="workingProject" placeholder="e.g., Project Phoenix"
+                        pattern="^[A-Za-z0-9\s.,'-]+$" required minlength="3"
+                        maxlength="100" title="Enter the project name (letters, numbers, basic punctuation).">
+                    <p class="error-message" id="workingProjectError">Invalid project name format.</p>
+                </div>
+            </div>
+
+            <!-- Input Group: Manager and Location -->
+            <div class="input-group">
+                <div>
+                    <label for="reportingManager">Reporting Manager:</label>
+                    <input type="text" id="reportingManager" placeholder="Enter Manager's Full Name"
+                        required minlength="3" maxlength="100"
+                        pattern="^[A-Za-z]+(?:['.\s][A-Za-z]+)*$"
+                        title="Please enter manager's valid name.">
+                    <p class="error-message" id="reportingManagerError">Invalid manager name format.</p>
+                </div>
+                <div>
+                    <label for="wfhLocation">WFH Location:</label>
+                    <input type="text" id="wfhLocation" placeholder="e.g., City, State or Home Office"
+                        pattern="^[A-Za-z0-9\s.,'-]+$" required minlength="3"
+                        maxlength="100" title="Enter your work location (city, address details...).">
+                    <p class="error-message" id="wfhLocationError">Invalid location format.</p>
+                </div>
+            </div>
+
+            <!-- Input Group: Dates -->
+            <div class="input-group">
+                <div>
+                    <label for="fromDate">From Date:</label>
+                    <input type="date" id="fromDate" required>
+                    <p class="error-message" id="fromDateError">Start date cannot be in the past.</p>
+                </div>
+                <div>
+                    <label for="toDate">To Date:</label>
+                    <input type="date" id="toDate" required>
+                    <p class="error-message" id="toDateError">End date must be on or after the start date.</p> <!-- Changed validation logic slightly -->
+                </div>
+            </div>
+
+            <!-- Reason Textarea -->
+            <label for="reason">Reason for Work from Home:</label>
+            <textarea id="reason" placeholder="Briefly explain the reason (min 10 chars)" required minlength="10"
+                maxlength="300" title="Please provide a reason (at least 10 characters)."></textarea> <!-- Removed restrictive pattern -->
+            <p class="error-message" id="reasonError">Reason must be at least 10 characters long.</p><br>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submitButton">Submit Request</button> <!-- Added ID -->
+             <!-- Message Area for feedback -->
+             <p id="formMessage" style="text-align: center; margin-top: 15px; font-weight: bold; min-height: 1.2em;"></p>
+        </form>
+    </div>
+
+    <!-- REMOVED the submissions-container div and its contents from here -->
+
+    <!-- Optional: Dark Mode Toggle Button (Keep if desired) -->
+     <button class="theme-toggle" id="themeToggle" title="Toggle light/dark theme">
+        <!-- SVG icons -->
+        <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.939 16.894a.75.75 0 00-1.06 1.06l1.59 1.591a.75.75 0 101.06-1.06l-1.59-1.59zM3 12a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h2.25A.75.75 0 013 12zM6.106 7.166a.75.75 0 00-1.06 1.06l1.591 1.59a.75.75 0 001.06-1.06l-1.59-1.591z"></path></svg>
+        <svg class="dark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-3.51 1.713-6.622 4.43-8.564a.75.75 0 01.818.162z" clip-rule="evenodd"></path></svg>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('wfhForm');
+            const formMessageEl = document.getElementById('formMessage');
+            const submitButton = document.getElementById('submitButton'); // Get submit button
+            const themeToggleButton = document.getElementById('themeToggle'); // For theme toggle if using
+            const body = document.body;
+
+             // --- Theme Toggling (Keep if desired) ---
+            const applyTheme = (isDark) => {
+                if (isDark) body.classList.add('dark-mode');
+                else body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', isDark); // Use localStorage for theme persistence
+            };
+            const currentThemeIsDark = localStorage.getItem('darkMode') === 'true';
+            applyTheme(currentThemeIsDark);
+            if(themeToggleButton) {
+                 themeToggleButton.addEventListener('click', () => {
+                     applyTheme(!body.classList.contains('dark-mode'));
+                 });
+            }
+
+            // --- Field Validation Functions ---
+            // Generic check using browser's checkValidity and custom messages
+            function checkFieldValidity(input, errorElement) {
+                input.setCustomValidity(''); // Clear previous custom errors
+                errorElement.style.display = 'none';
+                errorElement.textContent = '';
+
+                if (!input.checkValidity()) {
+                    // Use title attribute for custom message fallback
+                    errorElement.textContent = input.validationMessage || input.title || 'Invalid input.';
+                    errorElement.style.display = 'block';
+                    return false;
+                }
+                return true; // Field is valid based on basic constraints/pattern
+            }
+
+            // Date specific validation
+            function validateDates() {
+                 const fromDateInput = document.getElementById('fromDate');
+                 const toDateInput = document.getElementById('toDate');
+                 const fromDateError = document.getElementById('fromDateError');
+                 const toDateError = document.getElementById('toDateError');
+                 let isValid = true;
+
+                 // Clear previous errors
+                 fromDateInput.setCustomValidity('');
+                 toDateInput.setCustomValidity('');
+                 fromDateError.style.display = 'none';
+                 toDateError.style.display = 'none';
+
+                 const today = new Date();
+                 today.setHours(0, 0, 0, 0); // Compare date parts only
+
+                 if (fromDateInput.value) {
+                     const fromDate = new Date(fromDateInput.value);
+                     if (fromDate < today) {
+                         fromDateInput.setCustomValidity('Start date cannot be in the past.');
+                         fromDateError.textContent = 'Start date cannot be in the past.';
+                         fromDateError.style.display = 'block';
+                         isValid = false;
+                     }
+                 } else if (fromDateInput.required) {
+                     // Handle required validation if needed separately, though browser usually does
+                     isValid = false;
+                 }
+
+
+                 if (toDateInput.value && fromDateInput.value) {
+                     const fromDate = new Date(fromDateInput.value);
+                     const toDate = new Date(toDateInput.value);
+                     if (toDate < fromDate) {
+                         toDateInput.setCustomValidity('End date cannot be before the start date.');
+                         toDateError.textContent = 'End date cannot be before the start date.';
+                         toDateError.style.display = 'block';
+                         isValid = false;
+                     }
+                 } else if (toDateInput.required) {
+                     isValid = false;
+                 }
+                 return isValid;
+             }
+
+
+            // --- Attach Validation Listeners ---
+            const fieldsToValidate = [
+                { id: 'employeeName', errorId: 'employeeNameError' },
+                { id: 'employeeID', errorId: 'employeeIDError' },
+                { id: 'employeeEmail', errorId: 'employeeEmailError' },
+                { id: 'workingProject', errorId: 'workingProjectError' },
+                { id: 'reportingManager', errorId: 'reportingManagerError' },
+                { id: 'wfhLocation', errorId: 'wfhLocationError' },
+                { id: 'reason', errorId: 'reasonError' }
+                // Dates handled separately
+            ];
+
+            fieldsToValidate.forEach(field => {
+                const input = document.getElementById(field.id);
+                const errorElement = document.getElementById(field.errorId);
+                // Validate on input or blur
+                input.addEventListener('input', () => checkFieldValidity(input, errorElement));
+                input.addEventListener('blur', () => checkFieldValidity(input, errorElement));
+            });
+
+             // Attach date validation listeners
+             document.getElementById('fromDate').addEventListener('change', validateDates);
+             document.getElementById('toDate').addEventListener('change', validateDates);
+
+
+            // --- Form Submission ---
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevent default form submission
+                formMessageEl.textContent = ''; // Clear previous messages
+                formMessageEl.className = ''; // Clear message styling
+                submitButton.disabled = true; // Prevent double submission
+                submitButton.textContent = 'Submitting...';
+
+
+                let isFormValid = true;
+                // Validate all regular fields
+                fieldsToValidate.forEach(field => {
+                    const input = document.getElementById(field.id);
+                    const errorElement = document.getElementById(field.errorId);
+                    if (!checkFieldValidity(input, errorElement)) {
+                        isFormValid = false;
+                    }
+                });
+                // Validate dates specifically
+                if (!validateDates()) {
+                     isFormValid = false;
+                 }
+
+
+                if (!isFormValid) {
+                    formMessageEl.textContent = 'Please correct the errors above.';
+                    formMessageEl.style.color = 'red';
+                    submitButton.disabled = false; // Re-enable button
+                    submitButton.textContent = 'Submit Request';
+                    console.warn('Client-side validation failed.');
+                    return; // Stop submission
+                }
+
+                // If client-side validation passes, gather data
+                const formData = {
+                    // Use the names expected by the backend ('id' not 'employeeId', 'from' not 'fromDate', etc.)
+                    name: document.getElementById('employeeName').value.trim(),
+                    id: document.getElementById('employeeID').value.trim(),
+                    email: document.getElementById('employeeEmail').value.trim(),
+                    project: document.getElementById('workingProject').value.trim(),
+                    manager: document.getElementById('reportingManager').value.trim(),
+                    location: document.getElementById('wfhLocation').value.trim(),
+                    from: document.getElementById('fromDate').value,
+                    to: document.getElementById('toDate').value,
+                    reason: document.getElementById('reason').value.trim(),
+                     // reqId can be generated by backend if preferred
+                     // reqId: 'req_' + Date.now() + Math.random().toString(36).substring(2, 7)
+                };
+                console.log('Submitting form data:', formData);
+
+                // Send data to Flask backend using fetch
+                try {
+                    const response = await fetch('/submit_request', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData),
+                    });
+
+                    const result = await response.json(); // Always try to parse JSON response
+
+                    if (response.ok && result.success) {
+                        formMessageEl.textContent = result.message || 'Request submitted successfully!';
+                        formMessageEl.style.color = 'green';
+                        form.reset(); // Clear the form fields
+                        // Clear any lingering validation messages
+                        fieldsToValidate.forEach(field => {
+                            document.getElementById(field.errorId).style.display = 'none';
+                        });
+                        document.getElementById('fromDateError').style.display = 'none';
+                         document.getElementById('toDateError').style.display = 'none';
+
+                    } else {
+                        // Handle server-side validation errors or other failures
+                        formMessageEl.textContent = `Error: ${result.message || 'Submission failed. Please check details and try again.'}`;
+                        formMessageEl.style.color = 'red';
+                        console.error('Server error response:', result);
+                    }
+                } catch (error) {
+                    // Handle network errors or issues parsing JSON
+                    formMessageEl.textContent = 'Network error or server issue. Please try again later.';
+                    formMessageEl.style.color = 'red';
+                    console.error('Fetch submission error:', error);
+                } finally {
+                     submitButton.disabled = false; // Re-enable button after attempt
+                     submitButton.textContent = 'Submit Request';
+                 }
+            });
+
+             // REMOVED displaySubmissions and related localStorage logic
+
+        }); // End DOMContentLoaded
+    </script>
+</body>
+</html>
