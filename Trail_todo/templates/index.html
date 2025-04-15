@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Allocation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 20px;
+            color: #000000;
+            background-color: #f8f9fa; /* Light background */
+        }
+        header {
+          position: relative;
+          text-align: center;
+          height: 120px;
+          background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+          color: #fff;
+          border-radius: 15px;
+          overflow: hidden;
+          display: flex;
+          width: 98%;
+          margin: 0 auto 20px auto; /* Center header */
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          font-family: Verdana, Geneva, Tahoma, sans-serif;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+          margin: 0;
+          font-size: 36px;
+          color: white;
+          font-weight: 600;
+          letter-spacing: 2px;
+          position: relative;
+          z-index: 2;
+        }
+        header p{
+            font-weight: 100;
+            font-size: 18px;
+            margin-top: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        @keyframes moveCircles {
+          0% { transform: translateY(0) translateX(0); }
+          50% { transform: translateY(-50%) translateX(-50%); }
+          100% { transform: translateY(0) translateX(0); }
+        }
+        .banner-background {
+          position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+          z-index: 1; overflow: hidden;
+        }
+        .circle {
+          position: absolute; width: 200px; height: 200px;
+          background: rgba(255, 255, 255, 0.1); border-radius: 50%;
+          animation: moveCircles 10s infinite linear;
+        }
+        .circle:nth-child(1) { top: 10%; left: 20%; animation-duration: 8s; }
+        .circle:nth-child(2) { top: 50%; left: 70%; animation-duration: 12s; }
+        .circle:nth-child(3) { top: 80%; left: 40%; animation-duration: 15s; }
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            max-width: 1400px; /* Max width for dashboard */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .panel {
+            background: white; border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Softer shadow */
+            padding: 1.5rem; height: fit-content; /* Adjust height */
+        }
+        .panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .panel-title {
+            display: flex; margin: 0; font-size: 1.5rem;
+            font-weight: 600; color: #3a0098;
+        }
+        .work-items {
+            display: grid; grid-template-columns: 1fr;
+            max-height: 600px; /* Use max-height */
+            overflow-y: auto; /* Vertical scroll only */
+            gap: 1rem; padding-right: 10px; /* Space for scrollbar */
+        }
+        .work-card {
+            background: white; border-radius: 10px; padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #6b19f0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .work-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(107, 25, 240, 0.2); /* Highlight hover */
+        }
+        .work-title {
+            font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;
+            color: #333; /* Darker text */
+        }
+        .work-project {
+            font-size: 0.9rem; color: #6e48aa; font-weight: 500;
+            margin-bottom: 0.5rem; text-transform: uppercase; /* Style */
+        }
+        .work-data {
+            display: flex; gap: 1.5rem; margin-top: 1rem;
+            font-size: 0.9rem; color: #555; /* Slightly lighter text */
+        }
+        .work-data div { display: flex; align-items: center; gap: 0.3rem; }
+        .work-data i {
+            font-size: 1rem; font-style: normal; color: #007bff; /* Bootstrap blue */
+        }
+        .status-badge {
+            display: inline-block; padding: 0.3rem 0.8rem;
+            border-radius: 20px; font-size: 0.8rem; font-weight: 500;
+            margin-top: 1rem; /* Increased margin */
+        }
+        .status-pending { background: #fff4e5; color: #ff9500; }
+        .status-inprocess { background: #e5f6ff; color: #0077ff; }
+        .status-completed { background: #e5ffe7; color: #00aa33; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label {
+            display: block; margin-bottom: 0.5rem; font-weight: 500;
+            color: #495057; /* Bootstrap text color */
+        }
+        .form-control {
+            width: 100%; padding: 0.8rem 1rem; border: 1px solid #ced4da; /* Bootstrap border */
+            border-radius: 8px; font-size: 1rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .form-control:focus {
+            outline: 0; border-color: #80bdff; /* Bootstrap focus */
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 1rem center;
+            background-size: 1em;
+        }
+        .btn {
+            display: inline-block; padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #563d7c 0%, #007bff 100%); /* Bootstrap purple/blue */
+            color: white; border: none; border-radius: 8px; font-size: 1rem;
+            font-weight: 500; cursor: pointer;
+            transition: all 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #4a336a 0%, #0056b3 100%); /* Darker on hover */
+        }
+        .btn:active { transform: translateY(0); }
+        .btn-block { display: block; width: 100%; }
+        .history-panel { /* Use a class for the history panel */
+             background: white; border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            max-width: 1400px; margin: 0 auto; /* Center */
+        }
+        .history-container {
+            max-height: 350px; /* Increased height */
+            overflow-y: auto; margin-top: 1rem; /* Reduced top margin */
+            padding-right: 10px; /* Space for scrollbar */
+        }
+        .history-item {
+            background: #f8f9fa; /* Light background for items */
+            border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Subtle shadow */
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 4px solid #adb5bd; /* Grey border */
+        }
+        .history-info h4 {
+            margin: 0 0 0.3rem 0; font-size: 1.1rem; color: #343a40; /* Dark grey */
+        }
+        .history-info p { margin: 0; font-size: 0.9rem; color: #6c757d; } /* Medium grey */
+        .history-date { font-size: 0.85rem; color: #6c757d; white-space: nowrap; } /* No wrap date */
+        .empty-state {
+            text-align: center; padding: 3rem 1rem; color: #6c757d;
+            border: 2px dashed #e9ecef; border-radius: 10px;
+        }
+        .empty-state img { width: 100px; opacity: 0.6; margin-bottom: 1rem; }
+        .empty-state h3 { margin: 0 0 0.5rem 0; color: #495057;}
+        .error-message {
+            color: #dc3545; /* Bootstrap danger */
+            font-size: 0.8rem; margin-top: 0.25rem; /* Adjust spacing */
+            display: none; /* Hide by default */
+        }
+        .flash-messages { padding: 10px 20px; margin-bottom: 15px; max-width: 1400px; margin-left: auto; margin-right: auto; }
+        .alert { padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; border: 1px solid transparent; font-size: 0.95rem;}
+        .alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .alert-success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .alert-warning { background-color: #fff3cd; border-color: #ffeeba; color: #856404; }
+        .alert-info { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+
+        /* Dark Mode Styles */
+        .dark-mode { background-color: #121212; color: #e0e0e0; }
+        .dark-mode header { background: linear-gradient(135deg, #3a0098 0%, #1e1e1e 100%); box-shadow: 0 4px 10px rgba(255, 255, 255, 0.05); }
+        .dark-mode header h1 { color: #ffffff; }
+        .dark-mode header p { color: #bbbbbb; }
+        .dark-mode .panel, .dark-mode .history-panel { background: #1e1e1e; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); border: 1px solid #333;}
+        .dark-mode .panel-title { color: #bb86fc; } /* Purple accent */
+        .dark-mode .panel-header { border-bottom-color: #333; }
+        .dark-mode .work-card { background: #252525; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); border-left-color: #bb86fc; }
+        .dark-mode .work-card:hover { box-shadow: 0 5px 15px rgba(187, 134, 252, 0.3); }
+        .dark-mode .work-title { color: #ffffff; }
+        .dark-mode .work-project { color: #a0a0a0; }
+        .dark-mode .work-data { color: #b0b0b0; }
+        .dark-mode .work-data i { color: #03dac6; } /* Teal accent */
+        .dark-mode .status-badge { filter: brightness(0.8); } /* Dim badges slightly */
+        .dark-mode .form-control { background: #2c2c2c; color: #e0e0e0; border-color: #444; }
+        .dark-mode .form-label { color: #c0c0c0; }
+        .dark-mode .form-control:focus { border-color: #bb86fc; box-shadow: 0 0 0 0.2rem rgba(187, 134, 252, 0.25); background-color: #333;}
+        .dark-mode .form-select { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23cccccc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"); }
+        .dark-mode .btn { background: linear-gradient(135deg, #bb86fc 0%, #03dac6 100%); color: #121212; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
+        .dark-mode .btn:hover { background: linear-gradient(135deg, #a772e6 0%, #02bfae 100%); box-shadow: 0 6px 12px rgba(0,0,0,0.3);}
+        .dark-mode .history-item { background: #2a2a2a; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border-left-color: #555;}
+        .dark-mode .history-info h4 { color: #ffffff; }
+        .dark-mode .history-info p { color: #a0a0a0; }
+        .dark-mode .history-date { color: #a0a0a0; }
+        .dark-mode .empty-state { color: #a0a0a0; border-color: #444; }
+        .dark-mode .empty-state h3 { color: #c0c0c0; }
+        .dark-mode .error-message { color: #cf6679; } /* Material dark error */
+        .dark-mode .alert { filter: brightness(0.9);}
+        .dark-mode .alert-danger { background-color: #3b1f22; border-color: #582f33; color: #f4c7cb; }
+        .dark-mode .alert-success { background-color: #1c3a23; border-color: #2a5131; color: #c3e6cb; }
+        .dark-mode .alert-warning { background-color: #4d3c1a; border-color: #6b5324; color: #ffeeba; }
+        .dark-mode .alert-info { background-color: #1a3a45; border-color: #285e6a; color: #bee5eb; }
+
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .panel { height: auto; } /* Allow panels to resize */
+        }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            header { height: auto; padding: 20px 15px; width: 100%; border-radius: 10px;}
+            header h1 { font-size: 2rem; }
+            header p { font-size: 1rem; }
+            .dashboard { gap: 1rem; }
+            .panel, .history-panel { padding: 1rem; border-radius: 10px; }
+            .panel-title { font-size: 1.3rem; }
+            .work-card, .history-item { padding: 1rem; border-radius: 8px;}
+            .work-title, .history-info h4 { font-size: 1.1rem; }
+            .work-data { flex-direction: column; gap: 0.5rem; align-items: flex-start;}
+            .form-control, .btn { font-size: 0.9rem; padding: 0.7rem 0.9rem; }
+            .history-date { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="banner-background">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <h1>Work Allocation</h1>
+        <p>Track, manage, and update your assigned work</p>
+    </header>
+
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category or 'info' }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="dashboard">
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Allocated Work</h2>
+            </div>
+            <div class="work-items" id="workItemsContainer">
+                {% if tasks %}
+                    {% for task in tasks %}
+                    <div class="work-card">
+                        <div class="work-project">{{ task.project | default('HRMS Portal') }}</div>
+                        <h3 class="work-title">{{ task.taskName }}</h3>
+                        <div class="work-data">
+                            <div><i>📅</i> Assigned: {{ task.allocatedTime | default('N/A') }}</div>
+                            <div><i>⏰</i> Deadline: {{ task.deadline | default('N/A') }}</div>
+                        </div>
+                        {% if task.status %}
+                            {% set status_class = 'status-' + task.status | lower %}
+                            <span class="status-badge {{ status_class }}">{{ task.status | capitalize }}</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No work items">
+                        <h3>No work items assigned</h3>
+                        <p>You currently don't have any assigned work items</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Submit Your Work</h2>
+            </div>
+            <form id="workUpdateForm" action="{{ url_for('submit_work') }}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="task-name" class="form-label">Work Item Name</label>
+                    <input type="text" id="task-name" class="form-control" name="task-name" required minlength="5" placeholder="Enter Work Item name" maxlength="100">
+                    <div class="error-message" id="task-name-error">Work Item name must be at least 5 characters long.</div>
+                </div>
+                <div class="form-group">
+                    <label for="employee-name" class="form-label">Employee Name</label>
+                    <input type="text" id="employee-name" class="form-control" name="employee-name" placeholder="Enter your Name" required
+                           minlength="3" maxlength="100"
+                           pattern="^[A-Za-z]+(?:\.[A-Za-z]+)*(?: [A-Za-z]+)*(?:\.[A-Za-z]+){0,3}$"
+                           title="Username cannot start with a space, no consecutive spaces allowed, maximum 8 spaces and 3 periods allowed.">
+                    <div class="error-message" id="employee-name-error">Invalid employee name format.</div>
+                </div>
+                <div class="form-group">
+                    <label for="employee-id" class="form-label">Employee ID</label>
+                    <input type="text" id="employee-id" class="form-control" name="employee-id" required minlength="7" maxlength="7"
+                           placeholder="Enter Your ID" pattern="^[A-Z]{3}(?!0000)[0-9]{4}$"
+                           title="Employee ID should be in the format: 3 uppercase letters followed by 4 digits, starting from 0001 (cannot be 0000)">
+                    <div class="error-message" id="employee-id-error">Employee ID must be in the format ABC1234.</div>
+                </div>
+                <div class="form-group">
+                    <label for="upload-doc" class="form-label">Upload Document</label>
+                    <input type="file" id="upload-doc" class="form-control" name="upload-doc" required accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                           title="Acceptable file formats: PDF, DOC, DOCX, JPG, JPEG, PNG, TXT">
+                    <div class="error-message" id="upload-doc-error">Please upload a valid file (PDF, DOC, DOCX, JPG, JPEG, PNG, TXT).</div>
+                </div>
+                <div class="form-group">
+                    <label for="task-status" class="form-label">Work Status</label>
+                    <select id="task-status" class="form-control form-select" name="task-status" required>
+                        <option value="" disabled selected>Select Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="inprocess">In Progress</option>
+                    </select>
+                    <div class="error-message" id="task-status-error">Please select a work status.</div>
+                </div>
+                <button type="submit" class="btn btn-block">Submit Work Update</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel history-panel">
+        <div class="panel-header">
+            <h2 class="panel-title">Work History</h2>
+        </div>
+        <div class="history-container" id="workHistoryContainer">
+             {% if history %}
+                {% for item in history %}
+                <div class="history-item">
+                    <div class="history-info">
+                        <h4>{{ item.taskName }}</h4>
+                        <p>{{ item.project | default('HRMS Portal') }} • {{ item.employeeName }} ({{ item.employeeId }})</p>
+                        {% set status_class = 'status-' + item.taskStatus | lower %}
+                        <span class="status-badge {{ status_class }}">
+                            {{ item.taskStatus.replace('inprocess', 'In Progress') | capitalize }}
+                        </span>
+                        {% if item.uploadDocFilename %}
+                           <p style="font-size: 0.8em; margin-top: 5px;">
+                               Document: <a href="{{ url_for('uploaded_file', filename=item.uploadDocFilename) }}" target="_blank">{{ item.uploadDocFilename }}</a>
+                           </p>
+                        {% endif %}
+                    </div>
+                    <div class="history-date">{{ item.submittedTime.strftime('%Y-%m-%d %H:%M:%S') if item.submittedTime else 'N/A' }} UTC</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                 <div class="empty-state">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No history">
+                    <h3>No work history yet</h3>
+                    <p>Your submitted work updates will appear here</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setupValidation();
+            initializeDarkMode(); // Initialize dark mode on load
+        });
+
+        function setupValidation() {
+            const form = document.getElementById('workUpdateForm');
+            if (!form) return; // Exit if form not found
+
+            const inputs = {
+                'task-name': { min: 5, pattern: null },
+                'employee-name': { min: 3, pattern: /^[A-Za-z]+(?:\.[A-Za-z]+)*(?: [A-Za-z]+)*(?:\.[A-Za-z]+){0,3}$/ },
+                'employee-id': { min: 7, max: 7, pattern: /^[A-Z]{3}(?!0000)[0-9]{4}$/ },
+                'upload-doc': { required: true, type: 'file' },
+                'task-status': { required: true, type: 'select' }
+            };
+
+            Object.keys(inputs).forEach(id => {
+                const inputElement = document.getElementById(id);
+                const errorElement = document.getElementById(`${id}-error`);
+                if (!inputElement || !errorElement) return;
+
+                const config = inputs[id];
+                const eventType = (config.type === 'select' || config.type === 'file') ? 'change' : 'input';
+
+                inputElement.addEventListener(eventType, function() {
+                    validateField(inputElement, errorElement, config);
+                });
+                 // Initial validation check can be useful for pre-filled forms if any
+                // validateField(inputElement, errorElement, config);
+            });
+
+             // Optional: Add validation on form submit event for better UX,
+             // but server-side validation is the main check.
+             form.addEventListener('submit', function(event) {
+                 let isFormValid = true;
+                 Object.keys(inputs).forEach(id => {
+                     const inputElement = document.getElementById(id);
+                     const errorElement = document.getElementById(`${id}-error`);
+                     if (inputElement && errorElement) {
+                        if (!validateField(inputElement, errorElement, inputs[id])) {
+                             isFormValid = false;
+                         }
+                     }
+                 });
+                 // if (!isFormValid) {
+                 //     event.preventDefault(); // Prevent submission if client-side validation fails
+                 //     // Optionally focus the first invalid field
+                 // }
+             });
+        }
+
+        function validateField(inputElement, errorElement, config) {
+            let isValid = true;
+            let value = inputElement.value.trim();
+            errorElement.style.display = 'none'; // Reset error display
+
+             if (config.required) {
+                 if (config.type === 'file' && inputElement.files.length === 0) {
+                    isValid = false;
+                 } else if (config.type !== 'file' && !value) {
+                    isValid = false;
+                 }
+             }
+
+             if (isValid && config.min && value.length < config.min) isValid = false;
+             if (isValid && config.max && value.length > config.max) isValid = false;
+             if (isValid && config.pattern && !config.pattern.test(value)) isValid = false;
+
+             if (!isValid && (config.required || value.length > 0)) { // Show error if required or if user typed something invalid
+                 errorElement.style.display = 'block';
+             }
+             return isValid;
+        }
+
+
+        function initializeDarkMode() {
+             const isDarkMode = localStorage.getItem('darkMode') === 'true';
+             if (isDarkMode) {
+               document.body.classList.add('dark-mode');
+             } else {
+               document.body.classList.remove('dark-mode');
+             }
+             // Add a button/toggle listener here if you want to switch modes
+             // e.g., document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+        }
+
+        function toggleDarkMode() {
+             document.body.classList.toggle('dark-mode');
+             const isDarkMode = document.body.classList.contains('dark-mode');
+             localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        // Example: Add a toggle button in HTML: <button id="darkModeToggle">Toggle Dark Mode</button>
+        // Then uncomment the listener call in initializeDarkMode
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payslip Generator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Paste the Updated CSS from the previous response --- */
+        /* (Includes refined UI, dark mode, etc.) */
+        :root {
+            --primary-color: #5f06a8;
+            --primary-darker: #4a0481;
+            --accent-color-light: #bb86fc; /* For dark mode */
+            --accent-color-dark: #121212; /* For dark mode buttons */
+            --background-light: #f8f9fa;
+            --background-dark: #121212;
+            --text-light: #212529;
+            --text-dark: #e0e0e0;
+            --card-bg-light: white;
+            --card-bg-dark: #1e1e1e;
+            --border-light: #dee2e6;
+            --border-dark: #333;
+            --error-color: #dc3545;
+            --error-color-dark: #cf6679;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px; /* Base font size */
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        header {
+          position: relative;
+          text-align: center;
+          min-height: 120px; /* Use min-height */
+          background-color: var(--primary-color);
+          color: #fff;
+          border-radius: 15px;
+          overflow: hidden;
+          display: flex;
+          width: 98%;
+          max-width: 1200px; /* Max width for header */
+          margin: 0 auto 30px auto; /* Increased bottom margin */
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          padding: 20px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+          font-size: 2.25rem; /* Responsive font size */
+          font-weight: 700;
+          letter-spacing: 1px;
+          position: relative; z-index: 2;
+        }
+        header p {
+            font-size: 1.1rem;
+            margin-top: 8px;
+            font-weight: 400;
+            position: relative; z-index: 2;
+        }
+        /* Background animation styles (kept from original) */
+        .banner-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; overflow: hidden; }
+        .circle { position: absolute; width: 200px; height: 200px; background: rgba(255, 255, 255, 0.08); border-radius: 50%; animation: moveCircles 12s infinite linear alternate; }
+        .circle:nth-child(1) { top: 10%; left: 15%; animation-duration: 10s; width: 150px; height: 150px; }
+        .circle:nth-child(2) { top: 60%; left: 75%; animation-duration: 14s; width: 250px; height: 250px;}
+        .circle:nth-child(3) { top: 30%; left: 40%; animation-duration: 16s; opacity: 0.7; }
+        @keyframes moveCircles { from { transform: translateY(0) translateX(0) rotate(0deg); } to { transform: translateY(-20px) translateX(15px) rotate(45deg); } }
+
+        /* Main Content Layout */
+        .main-content {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping */
+            gap: 30px; /* Space between form and payslip */
+            justify-content: center;
+            margin: 0 auto;
+            max-width: 1100px; /* Container max width */
+        }
+
+        /* Form Container */
+        .payslip-form-container { /* Renamed for clarity */
+            background-color: var(--card-bg-light);
+            width: 100%;
+            max-width: 480px; /* Slightly wider form */
+            padding: 30px 35px; /* More padding */
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            border: 1px solid var(--border-light);
+            flex: 1 1 400px; /* Flex basis */
+            margin-bottom: 20px; /* Space below form on mobile */
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .payslip-form-container h2 {
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        /* Input Groups */
+        .input-group {
+            margin-bottom: 20px; /* More space between fields */
+            text-align: left;
+            position: relative; /* For potential icon positioning */
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px; /* Comfortable padding */
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            background-color: #fff; /* Ensure background for light mode */
+            color: var(--text-light);
+            transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(95, 6, 168, 0.15);
+        }
+        /* Style for placeholder text */
+        .input-group input::placeholder {
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        /* Error Message Styling */
+        .error-text {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none; /* Hidden by default */
+            font-weight: 500;
+        }
+        /* Show error text when associated input might be invalid (optional JS class) */
+        /* input.is-invalid + .error-text { display: block; } */
+        /* input.is-invalid { border-color: var(--error-color); } */
+
+
+        /* Button Styles */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .btn {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 12px 30px; /* Generous padding */
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .btn:hover {
+            background-color: var(--primary-darker);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(95, 6, 168, 0.2);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn span { /* In case spans are used inside */
+            display: inline-block;
+        }
+        /* Specific style for Download button maybe */
+        #downloadButton {
+             background-color: #6c757d; /* Greyish */
+        }
+         #downloadButton:hover {
+             background-color: #5a6268;
+             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+
+        /* Payslip Display Section */
+        .payslip-display-container {
+            width: 100%;
+            max-width: 480px; /* Match form width */
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Space between cards */
+            flex: 1 1 400px; /* Flex basis */
+        }
+        .card {
+            background-color: var(--card-bg-light);
+            border-radius: 12px;
+            padding: 20px 25px; /* Card padding */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+            border: 1px solid var(--border-light);
+             transition: background-color 0.3s, border-color 0.3s;
+        }
+        .card h4 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 10px;
+             transition: color 0.3s, border-color 0.3s;
+        }
+        .payslip-details {
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping if needed */
+            justify-content: space-between;
+            align-items: center; /* Align items vertically */
+            font-size: 0.95rem;
+            border-bottom: 1px dashed #eee; /* Subtle separator */
+            padding-bottom: 8px;
+        }
+         .payslip-details:last-child {
+             border-bottom: none; /* Remove border for last item before total */
+             padding-bottom: 0;
+             margin-bottom: 0;
+         }
+        .payslip-details label {
+            font-weight: 500;
+            color: #555; /* Slightly muted label color */
+            flex: 1 1 55%; /* Give label more space */
+            padding-right: 10px;
+            transition: color 0.3s;
+        }
+        .payslip-details p {
+            color: var(--text-light);
+            margin: 0;
+            font-weight: 500;
+            flex: 1 1 40%; /* Value space */
+            text-align: right;
+            transition: color 0.3s;
+        }
+        /* Total Row Styling */
+        .payslip-details.total {
+            font-weight: 700; /* Bold totals */
+            margin-top: 15px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 15px;
+             border-bottom: none; /* No bottom border for total row */
+        }
+        .payslip-details.total label {
+            color: var(--text-light); /* Make total label standard text color */
+            font-size: 1rem; /* Slightly larger total label */
+        }
+        .payslip-details.total p {
+            color: var(--primary-color); /* Highlight total amounts */
+            font-size: 1.1rem; /* Larger total value */
+        }
+
+
+        /* Flash Messages Styling */
+        .flash-messages {
+            width: 100%;
+            max-width: 1100px; /* Match main content width */
+            margin: -10px auto 20px auto; /* Position below header */
+            padding: 0 10px; /* Padding inside container */
+        }
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            display: flex; /* For potential icon alignment */
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .alert-warning { color: #856404; background-color: #fff3cd; border-color: #ffeeba; }
+        .alert-info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
+        .alert i { /* Style for optional Font Awesome icon */
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+
+        /* Dark Mode */
+        body.dark-mode { background-color: var(--background-dark); color: var(--text-dark); }
+        .dark-mode header { background-color: #1f023a; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        .dark-mode header h1 { color: var(--accent-color-light); }
+        .dark-mode header p { color: #b0b0b0; }
+        .dark-mode .circle { background: rgba(187, 134, 252, 0.08); }
+        .dark-mode .payslip-form-container { background-color: var(--card-bg-dark); border-color: var(--border-dark); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); }
+        .dark-mode .payslip-form-container h2 { color: var(--accent-color-light); }
+        .dark-mode .input-group label { color: #c0c0c0; }
+        .dark-mode .input-group input { background-color: #2c2c2c; color: var(--text-dark); border-color: #444; }
+        .dark-mode .input-group input:focus { border-color: var(--accent-color-light); box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.2); }
+        .dark-mode .input-group input::placeholder { color: #666; }
+        .dark-mode .error-text { color: var(--error-color-dark); }
+        /* .dark-mode input.is-invalid { border-color: var(--error-color-dark); } */
+        .dark-mode .btn { background-color: var(--accent-color-light); color: var(--accent-color-dark); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); }
+        .dark-mode .btn:hover { background-color: #a06cd5; box-shadow: 0 4px 10px rgba(187, 134, 252, 0.3); }
+        .dark-mode #downloadButton { background-color: #555; color: #eee; }
+        .dark-mode #downloadButton:hover { background-color: #666; }
+        .dark-mode .card { background-color: #252525; border-color: var(--border-dark); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); }
+        .dark-mode .card h4 { color: var(--accent-color-light); border-bottom-color: var(--border-dark); }
+        .dark-mode .payslip-details { border-bottom-color: #3a3a3a; }
+        .dark-mode .payslip-details label { color: #aaa; }
+        .dark-mode .payslip-details p { color: var(--text-dark); }
+        .dark-mode .payslip-details.total { border-top-color: var(--border-dark); }
+        .dark-mode .payslip-details.total label { color: var(--text-dark); }
+        .dark-mode .payslip-details.total p { color: var(--accent-color-light); }
+        .dark-mode .alert { filter: brightness(0.9); }
+        .dark-mode .alert-danger { background-color: #3b1f22; border-color: #582f33; color: #f4c7cb; }
+        .dark-mode .alert-success { background-color: #1c3a23; border-color: #2a5131; color: #c3e6cb; }
+        .dark-mode .alert-warning { background-color: #4d3c1a; border-color: #6b5324; color: #ffeeba; }
+        .dark-mode .alert-info { background-color: #1a3a45; border-color: #285e6a; color: #bee5eb; }
+
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            html { font-size: 15px; }
+            body { padding: 15px; }
+            header { min-height: auto; padding: 20px 15px; border-radius: 10px; width: 100%; }
+            header h1 { font-size: 1.8rem; }
+            header p { font-size: 1rem; }
+            .main-content { padding: 15px; gap: 25px; }
+            .payslip-form-container { padding: 25px 20px; max-width: 100%; }
+            .payslip-display-container { max-width: 100%; }
+            .btn { font-size: 0.9rem; padding: 10px 25px; }
+            .card h4 { font-size: 1.1rem; }
+            .payslip-details { font-size: 0.9rem; }
+             .payslip-details.total p { font-size: 1rem; }
+            .flash-messages { max-width: 100%; padding: 0 5px; margin-bottom: 15px; }
+        }
+
+        @media (max-width: 480px) {
+            html { font-size: 14px; }
+            body { padding: 10px; }
+            header { padding: 15px 10px; }
+            header h1 { font-size: 1.6rem; }
+            header p { font-size: 0.9rem; }
+            .main-content { padding: 10px; gap: 20px; }
+            .payslip-form-container { padding: 20px 15px; }
+            .input-group { margin-bottom: 15px; }
+            .input-group input { padding: 10px 12px; font-size: 0.95rem;}
+            .input-group label { font-size: 0.9rem; }
+            .btn { font-size: 0.85rem; padding: 10px 20px; }
+            .button-container { flex-direction: column; gap: 10px; } /* Stack buttons */
+            .card { padding: 15px; }
+            .card h4 { font-size: 1rem; margin-bottom: 15px; }
+            .payslip-details { font-size: 0.85rem; margin-bottom: 10px; }
+            .error-text { font-size: 0.8rem; }
+            .alert { font-size: 0.9rem; padding: 12px 15px; }
+        }
+
+    </style>
+</head>
+<!-- Apply dark mode class based on session or localStorage -->
+<body class="{{ 'dark-mode' if session.get('dark_mode') else '' }}">
+
+    <header>
+        <div class="banner-background">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <h1>Payslip Generator</h1>
+        <p>Generate and view your payslip details</p>
+        <!-- Example Dark Mode Toggle Button -->
+        <!--
+        <button onclick="toggleDarkMode()" style="position:absolute; top:10px; right:10px; z-index:3; padding: 5px 10px; cursor: pointer;">
+            Toggle Dark Mode
+        </button>
+        -->
+    </header>
+
+    <div class="flash-messages">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category or 'info' }}" role="alert">
+              {% if category == 'danger' %} <i class="fas fa-exclamation-triangle"></i>
+              {% elif category == 'warning' %} <i class="fas fa-exclamation-circle"></i>
+              {% elif category == 'success' %} <i class="fas fa-check-circle"></i>
+              {% else %} <i class="fas fa-info-circle"></i>
+              {% endif %}
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+
+    <div class="main-content">
+        <div class="payslip-form-container">
+            <h2>Enter Your Details</h2>
+            <form id="payslipForm" action="{{ url_for('generate_payslip') }}" method="POST" novalidate>
+                <div class="input-group">
+                    <label for="employeeName">Employee Name</label>
+                    <input
+                        id="employeeName" name="employeeName" type="text"
+                        placeholder="E.g., John Doe" required minlength="3" maxlength="50"
+                        pattern="^[A-Za-z]+(?:\.[A-Za-z]+)*(?: [A-Za-z]+)*(?:\.[A-Za-z]+){0,3}$"
+                        title="Letters, single spaces, single periods allowed."
+                        value="{{ form_data.employeeName if form_data else '' }}">
+                     <p class="error-text">Invalid name format.</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="employeeId">Employee ID</label>
+                    <input
+                        id="employeeId" name="employeeId" type="text"
+                        placeholder="E.g., ABC0123" required minlength="7" maxlength="7"
+                        pattern="^[A-Z]{3}0(?!000)[0-9]{3}$"
+                        title="Format: 3 capital letters, '0', then 001-999"
+                        value="{{ form_data.employeeId if form_data else '' }}">
+                     <p class="error-text">Invalid Employee ID format.</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input
+                        id="email" name="email" type="email"
+                        placeholder="E.g., user@example.com" required maxlength="50"
+                        value="{{ form_data.email if form_data else '' }}">
+                    <p class="error-text">Please enter a valid email address.</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input
+                        id="password" name="password" type="password"
+                        placeholder="Min 5 chars: letter, number, symbol" required minlength="5" maxlength="50"
+                        pattern="^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[\W_]).{5,}$"
+                        title="Must include letter, number, symbol (e.g., @#$%) and be >= 5 characters."
+                        value="{{ form_data.password if form_data else '' }}">
+                     <p class="error-text">Password does not meet requirements.</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="startMonth">Select Start Month:</label>
+                    <input
+                        type="month" id="startMonth" name="startMonth" required
+                        value="{{ form_data.startMonth if form_data else '' }}">
+                     <p class="error-text">Start month is required and cannot be in the future.</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="endMonth">Select End Month (Optional):</label>
+                    <input
+                        type="month" id="endMonth" name="endMonth"
+                        value="{{ form_data.endMonth if form_data else '' }}">
+                     <p class="error-text">End month must be after start month and cannot be in the future.</p>
+                </div>
+
+                <div class="button-container">
+                   <button type="submit" class="btn"><span>Generate Payslip</span></button>
+                </div>
+            </form>
+
+             <!-- Download button shown via separate form only when payslip is generated -->
+             {% if show_payslip %}
+             <form id="downloadForm" action="{{ url_for('download_payslip') }}" method="POST" style="margin-top: 20px;">
+                 <button type="submit" class="btn" id="downloadButton">
+                     <i class="fas fa-download"></i> <!-- Optional Icon -->
+                     <span>Download Payslip</span>
+                 </button>
+             </form>
+             {% endif %}
+
+        </div> <!-- End Form Container -->
+
+        <!-- Payslip Display Area (Conditional) -->
+        {% if show_payslip %}
+        <div class="payslip-display-container" id="payslipDisplayArea">
+            <!-- Card 1: Employee Details & Net Pay -->
+            <div class="card">
+                <h4>Employee Details & Net Pay</h4>
+                <div class="payslip-details">
+                    <label>Employee:</label>
+                    <p id="employeeNameDisplay">{{ employee_name | e }}</p>
+                </div>
+                <div class="payslip-details">
+                    <label>Employee ID:</label>
+                    <p id="employeeIdDisplay">{{ employee_id | e }}</p>
+                </div>
+                <div class="payslip-details">
+                    <label>Department:</label>
+                    <p>Software Developer</p> <!-- Static example -->
+                </div>
+                <div class="payslip-details">
+                    <label>Pay Period:</label>
+                    <p id="payPeriod">{{ pay_period | e }}</p>
+                </div>
+                <div class="payslip-details total">
+                    <label>Net Pay:</label>
+                    <p id="netPay">₹19,228.00</p> <!-- Static Example -->
+                </div>
+            </div>
+
+            <!-- Card 2: Earnings -->
+            <div class="card">
+                <h4>Earnings (Example)</h4>
+                <div class="payslip-details"><label>Basic Salary:</label><p>₹16,250.00</p></div>
+                <div class="payslip-details"><label>Dearness Allowance:</label><p>₹550.00</p></div>
+                <div class="payslip-details"><label>House Rent Allowance:</label><p>₹1,650.00</p></div>
+                <div class="payslip-details"><label>Wage Allowance:</label><p>₹120.00</p></div>
+                <div class="payslip-details"><label>Medical Allowance:</label><p>₹3,000.00</p></div>
+                <div class="payslip-details total"><label>Total Earnings:</label><p>₹21,670.00</p></div>
+            </div>
+
+            <!-- Card 3: Deductions -->
+            <div class="card">
+                <h4>Deductions (Example)</h4>
+                <div class="payslip-details"><label>Provident Fund:</label><p>₹1,800.00</p></div>
+                <div class="payslip-details"><label>Employee State Insurance:</label><p>₹142.00</p></div>
+                <div class="payslip-details"><label>Tax Deducted at Source:</label><p>₹0.00</p></div>
+                <div class="payslip-details"><label>Leave Without Pay:</label><p>₹0.00</p></div>
+                <div class="payslip-details"><label>Special Deduction:</label><p>₹500.00</p></div>
+                <div class="payslip-details total"><label>Total Deductions:</label><p>₹2,442.00</p></div>
+            </div>
+        </div>
+        {% endif %} <!-- End conditional display -->
+
+    </div> <!-- End main-content -->
+
+    <script>
+     // Basic JavaScript for client-side feedback and dark mode toggle
+     document.addEventListener("DOMContentLoaded", function () {
+        setupClientValidationFeedback();
+        initializeDarkMode();
+     });
+
+     function setupClientValidationFeedback() {
+        const form = document.getElementById("payslipForm");
+        if (!form) return;
+
+        // Select inputs that have validation attributes or are month type
+        const inputs = form.querySelectorAll("input[required], input[pattern], input[minlength], input[type='month'], input[type='email']");
+
+        inputs.forEach(input => {
+            const errorElement = input.parentNode.querySelector(".error-text");
+            if (!errorElement) {
+                console.warn("No error element found for input:", input.id);
+                return;
+            }
+            // Use dataset for custom messages if needed, fallback to title or default
+            errorElement.dataset.defaultMessage = errorElement.textContent || "Invalid input.";
+
+            // Validate on blur for less aggressive feedback
+            input.addEventListener("blur", function () {
+                validateSingleField(input, errorElement);
+            });
+
+            // Clear error promptly on input/change
+            input.addEventListener("input", function () {
+                // Avoid clearing month errors immediately on typing partial date
+                if (input.type !== 'month') {
+                   clearError(input, errorElement);
+                }
+            });
+            input.addEventListener("change", function () { // Handles month select, file select etc.
+                 clearError(input, errorElement);
+            });
+        });
+     }
+
+    function validateSingleField(inputElement, errorElement) {
+        // Assume valid initially
+        let isValid = true;
+        // Use constraint validation API
+        isValid = inputElement.checkValidity();
+
+        if (isValid && inputElement.type === 'month' && inputElement.value) {
+            // Add custom month logic checks ONLY if standard checks pass
+            const value = inputElement.value;
+            const startMonthInput = document.getElementById('startMonth');
+            const today = new Date();
+            const inputDate = new Date(value + "-02"); // Use day 2 for safety
+            const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            const minYear = 2022; // Example min year
+
+            if (inputElement.id === 'endMonth' && startMonthInput.value && value <= startMonthInput.value) {
+                 isValid = false;
+                 errorElement.textContent = "End month must be after start month.";
+            } else if (inputDate > currentMonthStart) {
+                 isValid = false;
+                 errorElement.textContent = "Month cannot be in the future.";
+            } else if (inputDate.getFullYear() < minYear){
+                isValid = false;
+                errorElement.textContent = `Month must be from ${minYear} onwards.`;
+            }
+            // If custom logic made it invalid, use the specific message set above
+        }
+
+        if (!isValid) {
+            // If still invalid after custom checks, use validationMessage or custom default
+            if(errorElement.textContent === errorElement.dataset.defaultMessage || !errorElement.textContent){
+                 errorElement.textContent = inputElement.validationMessage || errorElement.dataset.defaultMessage;
+            }
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+        return isValid;
+     }
+
+     function clearError(inputElement, errorElement) {
+         if(errorElement){
+            errorElement.style.display = "none";
+            // Reset to default message in case it was changed by custom logic
+            errorElement.textContent = errorElement.dataset.defaultMessage;
+         }
+     }
+
+     // --- Dark Mode Functions (remain the same) ---
+     function initializeDarkMode() {
+         const isDarkMode = localStorage.getItem('darkMode') === 'true';
+         const body = document.body;
+         if (isDarkMode) {
+           body.classList.add('dark-mode');
+         } else {
+           body.classList.remove('dark-mode');
+         }
+         // Optional: Add listener for a toggle button
+         const toggleButton = document.getElementById('darkModeToggle'); // If you add one
+         if (toggleButton) {
+             toggleButton.addEventListener('click', toggleDarkMode);
+         }
+     }
+
+     function toggleDarkMode() {
+         const body = document.body;
+         body.classList.toggle('dark-mode');
+         const isDarkMode = body.classList.contains('dark-mode');
+         localStorage.setItem('darkMode', isDarkMode);
+         // Optional: Post message if in iframe
+         // if (window.parent !== window) { window.parent.postMessage({ darkMode: isDarkMode }, '*'); }
+     }
+
+    // Listener for messages from parent window (if used in iframe)
+    window.addEventListener('message', function (event) {
+         if (event.data && typeof event.data.darkMode === 'boolean') {
+           const isDarkMode = event.data.darkMode;
+           const body = document.body;
+           if (isDarkMode) { body.classList.add('dark-mode'); }
+           else { body.classList.remove('dark-mode'); }
+           localStorage.setItem('darkMode', isDarkMode);
+         }
+    });
+
+    </script>
+
+</body>
+</html>
