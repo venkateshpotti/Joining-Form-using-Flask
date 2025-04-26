@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Onboarding Form</title>
+    <style>
+        /* --- CSS Styles (same as previous 'good' version) --- */
+         :root {
+            --primary-color: #000000;
+            --secondary-color: #0900ad; /* Main interactive color */
+            --accent-color: #e74c3c;   /* Required asterisk */
+            --light-gray: #f8f9fa;    /* Item backgrounds */
+            --medium-gray: #dee2e6;   /* Borders */
+            --dark-gray: #495057;     /* Labels, text */
+            --border-color: #ced4da;
+            --success-color: #28a745; /* Success button bg */
+            --danger-color: #dc3545;  /* Danger button bg, errors */
+            --info-color: #17a2b8;
+            --input-focus-color: #80bdff;
+            --input-focus-shadow: rgba(0, 123, 255, 0.25);
+            --input-invalid-color: var(--danger-color);
+            --input-invalid-shadow: rgba(220, 53, 69, 0.25);
+             --input-valid-color: var(--success-color);
+             --input-valid-shadow: rgba(40, 167, 69, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #e9ecef; /* Slightly off-white background */
+            color: #212529;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px; /* Slightly wider for complex form */
+            margin: 30px auto; /* More margin top/bottom */
+            background: white;
+            padding: 30px 40px; /* More padding */
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Alert Styling for Flash Messages --- */
+        .alert {
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            font-size: 0.95rem;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+         .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+         .alert-info {
+             color: #0c5460;
+             background-color: #d1ecf1;
+             border-color: #bee5eb;
+         }
+        /* --- End Alert Styling --- */
+
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px; /* Increased margin */
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 2rem; /* Larger heading */
+        }
+
+        .header p {
+            color: var(--dark-gray);
+            font-size: 1.1rem; /* Slightly larger subtext */
+        }
+
+        .company-logo {
+            max-height: 70px; /* Adjusted max height */
+            width: auto; /* Maintain aspect ratio */
+            margin-bottom: 15px; /* Space below logo */
+        }
+
+        .form-section {
+            margin-bottom: 40px; /* Increased spacing */
+            padding: 30px; /* More padding */
+            background-color: #ffffff;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(0,0,0, 0.05); /* Subtle shadow */
+        }
+
+        .section-title {
+            color: var(--secondary-color); /* Use secondary color */
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 1.4rem; /* Larger section titles */
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .form-group {
+            margin-bottom: 25px; /* Increased spacing */
+            position: relative; /* Needed for absolute positioned validation messages */
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -15px; /* Gutter */
+            margin-left: -15px;  /* Gutter */
+        }
+
+        .form-col {
+            flex: 1;
+            min-width: 220px; /* Slightly wider min-width */
+            padding-right: 15px; /* Gutter */
+            padding-left: 15px;  /* Gutter */
+             margin-bottom: 15px; /* Space between cols when wrapping */
+        }
+         /* Adjust flex-basis for common layouts */
+        .form-row .form-col-2 { flex-basis: 50%; max-width: 50%; }
+        .form-row .form-col-3 { flex-basis: 33.333%; max-width: 33.333%; }
+        .form-row .form-col-4 { flex-basis: 25%; max-width: 25%; }
+
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-gray);
+            font-size: 0.9rem; /* Slightly smaller label */
+        }
+
+        .required:after {
+            content: " *";
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="number"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem; /* Standard font size */
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            background-color: #fff; /* Ensure background is white */
+            line-height: 1.5; /* Added for better spacing inside input */
+        }
+        input[type="file"] {
+            padding: 5px; /* Less padding for file inputs */
+             background-color: var(--light-gray);
+        }
+
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--input-focus-color);
+            box-shadow: 0 0 0 0.2rem var(--input-focus-shadow);
+        }
+
+        input[readonly] {
+            background-color: #e9ecef; /* Readonly background */
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* Space between radio/checkbox options */
+            position: relative; /* For validation message positioning within group */
+        }
+         /* Container for radios to attach validation msg */
+        .radio-group-container {
+             padding-top: 5px; /* Space above radios if label is there */
+        }
+
+        .radio-group label, .checkbox-group label {
+            margin: 0 0 0 10px;
+            font-weight: normal;
+            cursor: pointer;
+            font-size: 0.95rem; /* Standard size */
+            color: #212529; /* Ensure label text color */
+        }
+
+        .radio-group input, .checkbox-group input {
+            cursor: pointer;
+            margin-top: 0; /* Align better */
+            width: 1.1em; /* Slightly larger */
+            height: 1.1em;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+         .checkbox-group label.required::after {
+             content: ""; /* Don't show asterisk next to checkbox label text itself */
+         }
+          .checkbox-group.is-invalid label {
+            color: var(--danger-color); /* Make label red if invalid */
+         }
+
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            padding: 10px 20px; /* More horizontal padding */
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            text-align: center;
+            text-decoration: none; /* Remove underline if used as link */
+            line-height: 1.5;
+            white-space: nowrap; /* Prevent wrapping */
+            vertical-align: middle; /* Align with text */
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+        }
+        .btn-primary:hover { background-color: #0056b3; } /* Darker shade */
+
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: #218838; }
+
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover { background-color: #c82333; }
+
+        .btn-info { background-color: var(--info-color); }
+        .btn-info:hover { background-color: #138496; }
+
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.875rem; /* Smaller font */
+             border-radius: 0.2rem;
+        }
+         /* Button positioning for remove buttons */
+         .remove-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            line-height: 1; /* Ensure button size is tight */
+            padding: 5px 8px;
+             font-size: 1rem;
+             font-weight: bold;
+             z-index: 10; /* Ensure above other elements */
+         }
+
+        .experience-item, .education-item, .insurance-item {
+            background: var(--light-gray);
+            padding: 25px;
+            padding-top: 35px; /* More space at top for remove button */
+            margin-bottom: 25px;
+            border-radius: 6px;
+            border: 1px solid var(--medium-gray);
+            position: relative; /* For absolute positioning of remove button */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .document-upload {
+            border: 2px dashed var(--border-color);
+            padding: 25px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            transition: border-color 0.2s, background-color 0.2s;
+             background-color: #fff;
+             position: relative; /* For validation message */
+        }
+
+        .document-upload:hover {
+            border-color: var(--secondary-color);
+            background-color: #f8f9fa;
+        }
+        .document-upload.is-invalid {
+            border-color: var(--input-invalid-color) !important; /* Ensure override */
+             background-color: #fdecea;
+        }
+
+
+        .document-upload p {
+            margin: 10px 0 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .document-upload input[type="file"] {
+            display: block;
+            margin: 0 auto 10px auto; /* Center file input */
+             width: auto; /* Don't force 100% width */
+             border: none;
+             background: none;
+             padding: 0;
+        }
+
+        .signature-upload {
+            border: 1px solid var(--border-color);
+            background: white;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+             position: relative;
+        }
+         .signature-upload.is-invalid {
+             border-color: var(--input-invalid-color) !important;
+         }
+
+        .form-note {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: -10px; /* Pull closer to field above */
+            margin-bottom: 15px; /* Space below note */
+            font-style: italic;
+        }
+
+        .current-job-toggle {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .current-job-toggle label {
+            margin-left: 8px;
+            margin-bottom: 0;
+            cursor: pointer;
+            font-weight: normal;
+             font-size: 0.9rem;
+        }
+
+        /* --- Validation Styling --- */
+        .is-invalid {
+            border-color: var(--input-invalid-color) !important; /* Force override */
+        }
+         input.is-invalid:focus, select.is-invalid:focus, textarea.is-invalid:focus {
+             box-shadow: 0 0 0 0.2rem var(--input-invalid-shadow) !important;
+         }
+
+        .is-valid {
+            border-color: var(--input-valid-color) !important;
+        }
+         input.is-valid:focus, select.is-valid:focus, textarea.is-valid:focus {
+             box-shadow: 0 0 0 0.2rem var(--input-valid-shadow) !important;
+         }
+
+
+        .validation-message {
+            font-size: 0.8rem;
+            color: var(--danger-color);
+            margin-top: 5px;
+            display: none; /* Initially hidden */
+            width: 100%; /* Take full width below input */
+        }
+        /* Display message when relevant element has .is-invalid */
+        /* Using adjacent sibling (+) or general sibling (~) or parent */
+        .is-invalid + .validation-message,          /* Input directly followed by message */
+        .form-group > .is-invalid + .validation-message, /* Input within group followed by message */
+        .document-upload.is-invalid .validation-message, /* Message inside invalid upload div */
+        .signature-upload.is-invalid .validation-message,
+        .checkbox-group.is-invalid + .validation-message, /* Message after invalid checkbox group */
+        .radio-group-container.is-invalid .validation-message /* Message inside invalid radio group */
+        {
+            display: block;
+        }
+
+
+        @media (max-width: 768px) {
+            .form-col,
+            .form-row .form-col-2,
+            .form-row .form-col-3,
+            .form-row .form-col-4 {
+                flex-basis: 100%;
+                max-width: 100%;
+                margin-bottom: 20px; /* More space on mobile */
+                padding-left: 10px; /* Reduce gutter */
+                padding-right: 10px;
+            }
+            .form-row {
+                margin-left: -10px;
+                margin-right: -10px;
+            }
+             .form-col:last-child {
+                 margin-bottom: 0; /* No extra margin for last col in row on mobile */
+             }
+
+            .form-section {
+                padding: 20px;
+            }
+             .container {
+                 padding: 20px 15px;
+             }
+             .header h1 { font-size: 1.7rem; }
+             .header p { font-size: 1rem; }
+             .section-title { font-size: 1.25rem; }
+             .btn { font-size: 0.95rem; padding: 9px 18px; }
+             .remove-btn { top: 10px; right: 10px; padding: 4px 7px; font-size: 0.9rem;}
+             .experience-item, .education-item, .insurance-item { padding: 20px; padding-top: 30px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Flash Messages Section -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <!-- End Flash Messages Section -->
+
+        <div class="header">
+            <img src="{{ url_for('static', filename='images/company_logo.png') }}" alt="Company Logo" class="company-logo">
+            <h1>Employee Onboarding Form</h1>
+            <p>Please complete all sections of this form to finalize your onboarding process.</p>
+        </div>
+
+        <form id="onboardingForm" method="POST" action="{{ url_for('submit_form') }}" enctype="multipart/form-data" novalidate>
+            <!-- Add novalidate to disable default browser validation bubbles -->
+
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">Personal Information</h2>
+
+                <div class="form-row">
+                    <div class="form-col form-col-2"> <!-- Use col-2 for 50% width -->
+                        <div class="form-group">
+                            <label for="firstName" class="required">First Name</label>
+                            <input type="text" id="firstName" name="firstName" required minlength="2" maxlength="50">
+                            <div class="validation-message" id="firstName-error"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-col form-col-2">
+                        <div class="form-group">
+                            <label for="lastName" class="required">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" required maxlength="50">
+                            <div class="validation-message" id="lastName-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col form-col-3"> <!-- Use col-3 for 33% width -->
+                         <div class="form-group">
+                            <label for="dateOfBirth" class="required">Date of Birth</label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                             <div class="validation-message" id="dateOfBirth-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label class="required">Gender</label>
+                            <div class="radio-group-container" id="gender-group"> <!-- Container for radios -->
+                                <div class="radio-group">
+                                    <input type="radio" id="male" name="gender" value="male" required>
+                                    <label for="male">Male</label>
+                                </div>
+                                <div class="radio-group">
+                                    <input type="radio" id="female" name="gender" value="female" required>
+                                    <label for="female">Female</label>
+                                </div>
+                                 <div class="validation-message" id="gender-error"></div> <!-- Error message for the group -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="maritalStatus">Marital Status</label>
+                            <select id="maritalStatus" name="maritalStatus">
+                                <option value="">-- Select --</option>
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                                <option value="divorced">Divorced</option>
+                                <option value="widowed">Widowed</option>
+                            </select>
+                             <!-- Optional validation: <div class="validation-message" id="maritalStatus-error"></div> -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="personalEmail" class="required">Personal Email</label>
+                            <input type="email" id="personalEmail" name="personalEmail" required>
+                             <div class="validation-message" id="personalEmail-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="phone" class="required">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required pattern="^[0-9]{10,15}$" title="Enter 10-15 digits">
+                             <div class="validation-message" id="phone-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="alternatePhone">Alternate Phone Number</label>
+                            <input type="tel" id="alternatePhone" name="alternatePhone" pattern="^[0-9]{10,15}$" title="Enter 10-15 digits">
+                             <div class="validation-message" id="alternatePhone-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="form-group">
+                    <label for="nationality" class="required">Nationality</label>
+                    <input type="text" id="nationality" name="nationality" required>
+                    <div class="validation-message" id="nationality-error"></div>
+                </div>
+            </div>
+
+            <!-- Address Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">Address Information</h2>
+
+                <h3>Permanent Address</h3>
+                <div class="form-row">
+                    <div class="form-col form-col-2">
+                        <div class="form-group">
+                            <label for="permanentStreet" class="required">Street Address</label>
+                            <input type="text" id="permanentStreet" name="permanentStreet" required>
+                            <div class="validation-message" id="permanentStreet-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-2">
+                        <div class="form-group">
+                            <label for="permanentCity" class="required">City</label>
+                            <input type="text" id="permanentCity" name="permanentCity" required>
+                            <div class="validation-message" id="permanentCity-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="permanentState" class="required">State/Province</label>
+                            <input type="text" id="permanentState" name="permanentState" required>
+                            <div class="validation-message" id="permanentState-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="permanentZip" class="required">ZIP/Postal Code</label>
+                            <input type="text" id="permanentZip" name="permanentZip" required>
+                             <div class="validation-message" id="permanentZip-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="permanentCountry" class="required">Country</label>
+                            <input type="text" id="permanentCountry" name="permanentCountry" required>
+                            <div class="validation-message" id="permanentCountry-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="sameAsPermanent" name="sameAsPermanent">
+                        <label for="sameAsPermanent">Current address is same as permanent address</label>
+                    </div>
+                </div>
+
+                <div id="currentAddressSection"> <!-- JS toggles display and required attributes within -->
+                    <h3>Current Address</h3>
+                    <div class="form-row">
+                        <div class="form-col form-col-2">
+                            <div class="form-group">
+                                <label for="currentStreet" class="required">Street Address</label>
+                                <input type="text" id="currentStreet" name="currentStreet"> <!-- Required toggled by JS -->
+                                 <div class="validation-message" id="currentStreet-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-2">
+                            <div class="form-group">
+                                <label for="currentCity" class="required">City</label>
+                                <input type="text" id="currentCity" name="currentCity">
+                                <div class="validation-message" id="currentCity-error"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col form-col-3">
+                             <div class="form-group">
+                                <label for="currentState" class="required">State/Province</label>
+                                <input type="text" id="currentState" name="currentState">
+                                <div class="validation-message" id="currentState-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-3">
+                             <div class="form-group">
+                                <label for="currentZip" class="required">ZIP/Postal Code</label>
+                                <input type="text" id="currentZip" name="currentZip">
+                                <div class="validation-message" id="currentZip-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-3">
+                             <div class="form-group">
+                                <label for="currentCountry" class="required">Country</label>
+                                <input type="text" id="currentCountry" name="currentCountry">
+                                <div class="validation-message" id="currentCountry-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact Section -->
+            <div class="form-section">
+                <h2 class="section-title">Emergency Contact Information</h2>
+
+                 <h4>Primary Contact</h4>
+                <div class="form-row">
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="emergencyName1" class="required">Full Name</label>
+                            <input type="text" id="emergencyName1" name="emergencyName1" required>
+                             <div class="validation-message" id="emergencyName1-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="emergencyRelationship1" class="required">Relationship</label>
+                            <input type="text" id="emergencyRelationship1" name="emergencyRelationship1" required>
+                            <div class="validation-message" id="emergencyRelationship1-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="emergencyPhone1" class="required">Phone Number</label>
+                            <input type="tel" id="emergencyPhone1" name="emergencyPhone1" required pattern="^[0-9]{10,15}$" title="Enter 10-15 digits">
+                             <div class="validation-message" id="emergencyPhone1-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="emergencyEmail1">Email Address</label>
+                            <input type="email" id="emergencyEmail1" name="emergencyEmail1">
+                            <div class="validation-message" id="emergencyEmail1-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                 <hr style="margin: 30px 0;"> <!-- Separator -->
+
+                 <h4>Secondary Contact (Optional)</h4>
+                <div class="form-row">
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="emergencyName2">Full Name</label>
+                            <input type="text" id="emergencyName2" name="emergencyName2">
+                        </div>
+                    </div>
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="emergencyRelationship2">Relationship</label>
+                            <input type="text" id="emergencyRelationship2" name="emergencyRelationship2">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="emergencyPhone2">Phone Number</label>
+                            <input type="tel" id="emergencyPhone2" name="emergencyPhone2" pattern="^[0-9]{10,15}$" title="Enter 10-15 digits">
+                             <div class="validation-message" id="emergencyPhone2-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="emergencyEmail2">Email Address</label>
+                            <input type="email" id="emergencyEmail2" name="emergencyEmail2">
+                            <div class="validation-message" id="emergencyEmail2-error"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Education Section -->
+            <div class="form-section">
+                <h2 class="section-title">Education History</h2>
+                <p class="form-note">Please enter your education details starting with the most recent.</p>
+
+                <!-- SSC Section -->
+                <div class="education-item">
+                     <h3>SSC (10th Grade)</h3>
+                    <div class="form-row">
+                        <div class="form-col form-col-3">
+                            <div class="form-group">
+                                <label for="sscSchool" class="required">School Name</label>
+                                <input type="text" id="sscSchool" name="education[ssc][school]" required >
+                                <div class="validation-message" id="sscSchool-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-3">
+                            <div class="form-group">
+                                <label for="sscYear" class="required">Year of Completion</label>
+                                <input type="text" id="sscYear" name="education[ssc][year]" required pattern="\d{4}" title="Enter 4-digit year">
+                                <div class="validation-message" id="sscYear-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-3">
+                            <div class="form-group">
+                                <label for="sscGrade" class="required">CGPA/Percentage</label>
+                                <input type="text" id="sscGrade" name="education[ssc][grade]" required>
+                                <div class="validation-message" id="sscGrade-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="sscCertificate" class="required">SSC Certificate</label>
+                        <div class="document-upload">
+                            <input type="file" id="sscCertificate" name="education[ssc][certificate]" required accept=".pdf,.jpg,.png,.jpeg">
+                            <p>Upload scanned copy (PDF, JPG, PNG, JPEG)</p>
+                            <div class="validation-message" id="sscCertificate-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Intermediate/Diploma Section -->
+                <div class="education-item">
+                    <h3>Intermediate/Diploma</h3>
+                    <div class="form-row">
+                        <div class="form-col form-col-3">
+                            <div class="form-group">
+                                <label for="interCollege" class="required">College Name</label>
+                                <input type="text" id="interCollege" name="education[inter][college]" required>
+                                <div class="validation-message" id="interCollege-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-3">
+                            <div class="form-group">
+                                <label for="interYear" class="required">Year of Completion</label>
+                                <input type="text" id="interYear" name="education[inter][year]" required pattern="\d{4}" title="Enter 4-digit year">
+                                <div class="validation-message" id="interYear-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-3">
+                            <div class="form-group">
+                                <label for="interGrade" class="required">CGPA/Percentage</label>
+                                <input type="text" id="interGrade" name="education[inter][grade]" required>
+                                <div class="validation-message" id="interGrade-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col"> <!-- Full width column -->
+                            <div class="form-group">
+                                <label for="interBranch" class="required">Branch/Stream</label>
+                                <input type="text" id="interBranch" name="education[inter][branch]" required>
+                                <div class="validation-message" id="interBranch-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         <label for="interCertificate" class="required">Intermediate/Diploma Certificate</label>
+                        <div class="document-upload">
+                            <input type="file" id="interCertificate" name="education[inter][certificate]" required accept=".pdf,.jpg,.png,.jpeg">
+                            <p>Upload scanned copy (PDF, JPG, PNG, JPEG)</p>
+                            <div class="validation-message" id="interCertificate-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graduation Section -->
+                <div class="education-item">
+                    <h3>Graduation</h3>
+                    <div class="form-row">
+                        <div class="form-col form-col-3">
+                             <div class="form-group">
+                                <label for="gradCollege" class="required">University/College Name</label>
+                                <input type="text" id="gradCollege" name="education[grad][college]" required>
+                                <div class="validation-message" id="gradCollege-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-3">
+                             <div class="form-group">
+                                <label for="gradYear" class="required">Year of Completion</label>
+                                <input type="text" id="gradYear" name="education[grad][year]" required pattern="\d{4}" title="Enter 4-digit year">
+                                <div class="validation-message" id="gradYear-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-3">
+                             <div class="form-group">
+                                <label for="gradGrade" class="required">CGPA/Percentage</label>
+                                <input type="text" id="gradGrade" name="education[grad][grade]" required>
+                                <div class="validation-message" id="gradGrade-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col form-col-2">
+                             <div class="form-group">
+                                <label for="gradDegree" class="required">Degree</label>
+                                <input type="text" id="gradDegree" name="education[grad][degree]" required>
+                                <div class="validation-message" id="gradDegree-error"></div>
+                            </div>
+                        </div>
+                        <div class="form-col form-col-2">
+                             <div class="form-group">
+                                <label for="gradBranch" class="required">Branch/Stream</label>
+                                <input type="text" id="gradBranch" name="education[grad][branch]" required>
+                                <div class="validation-message" id="gradBranch-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="gradCertificate" class="required">Graduation Certificate</label>
+                        <div class="document-upload">
+                            <input type="file" id="gradCertificate" name="education[grad][certificate]" required accept=".pdf,.jpg,.png,.jpeg">
+                            <p>Upload scanned copy (PDF, JPG, PNG, JPEG)</p>
+                             <div class="validation-message" id="gradCertificate-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Education Section (Dynamically Added) -->
+                <div id="additionalEducationContainer"></div>
+
+                <button type="button" id="addEducation" class="btn btn-success btn-sm">Add Another Degree (Max 2)</button>
+            </div>
+
+
+            <!-- Work Experience Section -->
+            <div class="form-section">
+                <h2 class="section-title">Work Experience</h2>
+                <p class="form-note">Please provide details of your previous employment, starting with the most recent.</p>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="hasExperience" name="hasExperience">
+                        <label for="hasExperience">I have previous work experience</label>
+                    </div>
+                </div>
+
+                <div id="experienceContainer" style="display: none;">
+                    <!-- Initial Experience Item (index 0) -->
+                    <div class="experience-item">
+                         <h3>Experience 1</h3>
+                         <div class="form-row">
+                            <div class="form-col form-col-2">
+                                <div class="form-group">
+                                    <label for="company1" class="required">Company Name</label>
+                                    <input type="text" id="company1" name="experience[0][company]" data-initially-required="true"> <!-- Required toggled by JS -->
+                                    <div class="validation-message" id="company1-error"></div>
+                                </div>
+                            </div>
+                            <div class="form-col form-col-2">
+                                <div class="form-group">
+                                    <label for="jobTitle1" class="required">Job Title</label>
+                                    <input type="text" id="jobTitle1" name="experience[0][jobTitle]" data-initially-required="true">
+                                     <div class="validation-message" id="jobTitle1-error"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col form-col-2">
+                                <div class="form-group">
+                                    <label for="employmentStartDate1" class="required">Start Date</label>
+                                    <input type="date" id="employmentStartDate1" name="experience[0][startDate]" data-initially-required="true">
+                                    <div class="validation-message" id="employmentStartDate1-error"></div>
+                                </div>
+                            </div>
+                            <div class="form-col form-col-2">
+                                <div class="form-group">
+                                    <label for="employmentEndDate1" id="endDateLabel1" class="required">End Date</label> <!-- Label ID, required toggled by JS -->
+                                    <input type="date" id="employmentEndDate1" name="experience[0][endDate]" data-initially-required="true"> <!-- Required toggled by JS -->
+                                    <div class="current-job-toggle">
+                                        <input type="checkbox" id="currentJob1" name="experience[0][currentJob]" data-index="0"> <!-- Data index for JS -->
+                                        <label for="currentJob1">I currently work here</label>
+                                    </div>
+                                     <div class="validation-message" id="employmentEndDate1-error"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col form-col-2">
+                                <div class="form-group">
+                                    <label for="employeeId1" class="required">Employee ID</label>
+                                    <input type="text" id="employeeId1" name="experience[0][employeeId]" data-initially-required="true">
+                                     <div class="validation-message" id="employeeId1-error"></div>
+                                </div>
+                            </div>
+                            <div class="form-col form-col-2">
+                                <div class="form-group">
+                                    <label for="supervisorName1">Supervisor Name (Optional)</label>
+                                    <input type="text" id="supervisorName1" name="experience[0][supervisorName]">
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                            <label for="jobDescription1" class="required">Job Description / Responsibilities</label>
+                            <textarea id="jobDescription1" name="experience[0][description]" rows="3" data-initially-required="true"></textarea>
+                            <div class="validation-message" id="jobDescription1-error"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="experienceCertificate1" class="required">Experience Certificate</label>
+                            <div class="document-upload">
+                                <input type="file" id="experienceCertificate1" name="experience[0][certificate]" accept=".pdf,.jpg,.png,.jpeg" data-initially-required="true">
+                                <p>Upload experience/relieving letter (PDF, JPG, PNG, JPEG)</p>
+                                <div class="validation-message" id="experienceCertificate1-error"></div>
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                            <label>Salary Slips (Last 3 Months, Optional)</label>
+                            <div class="document-upload">
+                                <input type="file" id="salarySlips1" name="experience[0][salarySlips]" multiple accept=".pdf,.jpg,.png,.jpeg">
+                                <p>Upload up to 3 slips (PDF, JPG, PNG, JPEG)</p>
+                            </div>
+                        </div>
+                         <!-- No remove button for the first item -->
+                    </div>
+                     <!-- More experience items will be added here by JS -->
+                </div>
+
+                <div id="experienceAddButton" style="display: none; margin-top: 20px;">
+                    <button type="button" id="addExperienceBtn" class="btn btn-success btn-sm">Add Another Experience (Max 3 total)</button>
+                </div>
+            </div>
+
+
+            <!-- Documents Section -->
+            <div class="form-section">
+                <h2 class="section-title">Required Documents</h2>
+
+                <div class="form-group">
+                    <label for="idProof" class="required">ID Proof</label>
+                    <div class="document-upload">
+                        <input type="file" id="idProof" name="idProof" required accept=".pdf,.jpg,.png,.jpeg">
+                        <p>Govt. issued ID (Passport, Driver's License, Aadhaar, etc.) (PDF, JPG, PNG, JPEG)</p>
+                         <div class="validation-message" id="idProof-error"></div>
+                    </div>
+                </div>
+
+                 <div class="form-group">
+                    <label for="resume" class="required">Resume/CV</label>
+                    <div class="document-upload">
+                        <input type="file" id="resume" name="resume" required accept=".pdf,.docx">
+                        <p>Upload your updated resume (PDF or DOCX)</p>
+                        <div class="validation-message" id="resume-error"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bank Information Section -->
+             <div class="form-section">
+                <h2 class="section-title">Bank Information (for Salary)</h2>
+
+                <div class="form-row">
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="bankName" class="required">Bank Name</label>
+                            <input type="text" id="bankName" name="bankName" required>
+                             <div class="validation-message" id="bankName-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-2">
+                         <div class="form-group">
+                            <label for="accountName" class="required">Account Holder Name (as per bank records)</label>
+                            <input type="text" id="accountName" name="accountName" required>
+                             <div class="validation-message" id="accountName-error"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="accountNumber" class="required">Account Number</label>
+                            <input type="text" id="accountNumber" name="accountNumber" required>
+                            <div class="validation-message" id="accountNumber-error"></div>
+                        </div>
+                    </div>
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="routingNumber">Routing / ABA / IFSC Code</label>
+                            <input type="text" id="routingNumber" name="routingNumber">
+                             <div class="validation-message" id="routingNumber-error"></div> <!-- If validation needed -->
+                        </div>
+                    </div>
+                    <div class="form-col form-col-3">
+                         <div class="form-group">
+                            <label for="iban">IBAN (International, if applicable)</label>
+                            <input type="text" id="iban" name="iban">
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="form-group">
+                    <label for="bankAddress">Bank Branch Address (Optional)</label>
+                    <textarea id="bankAddress" name="bankAddress" rows="2"></textarea>
+                </div>
+            </div>
+
+            <!-- Insurance Information Section -->
+             <div class="form-section">
+                <h2 class="section-title">Insurance Information</h2>
+                 <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="hasInsurance" name="hasInsurance">
+                        <label for="hasInsurance">I have personal insurance information to provide (optional)</label>
+                    </div>
+                </div>
+
+                <div id="insuranceContainer" style="display: none;">
+                     <!-- Initial Insurance Item (index 0) -->
+                    <div class="insurance-item">
+                        <h3>Insurance Policy 1</h3>
+                        <div class="form-row">
+                            <div class="form-col form-col-2">
+                                 <div class="form-group">
+                                    <label for="insuranceProvider1" class="required">Provider Name</label>
+                                    <input type="text" id="insuranceProvider1" name="insurance[0][provider]" data-initially-required="true"> <!-- Required toggled by JS -->
+                                    <div class="validation-message" id="insuranceProvider1-error"></div>
+                                </div>
+                            </div>
+                            <div class="form-col form-col-2">
+                                 <div class="form-group">
+                                    <label for="policyNumber1" class="required">Policy Number</label>
+                                    <input type="text" id="policyNumber1" name="insurance[0][policyNumber]" data-initially-required="true">
+                                    <div class="validation-message" id="policyNumber1-error"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col form-col-2">
+                                 <div class="form-group">
+                                    <label for="coverageType1" class="required">Coverage Type</label>
+                                    <select id="coverageType1" name="insurance[0][coverageType]" data-initially-required="true">
+                                        <option value="">-- Select Coverage --</option>
+                                        <option value="health">Health</option>
+                                        <option value="dental">Dental</option>
+                                        <option value="vision">Vision</option>
+                                        <option value="life">Life</option>
+                                        <option value="disability">Disability</option>
+                                         <option value="other">Other</option>
+                                    </select>
+                                    <div class="validation-message" id="coverageType1-error"></div>
+                                </div>
+                            </div>
+                            <div class="form-col form-col-2">
+                                 <div class="form-group">
+                                    <label for="expirationDate1">Expiration Date (Optional)</label>
+                                    <input type="date" id="expirationDate1" name="insurance[0][expirationDate]">
+                                    <div class="validation-message" id="expirationDate1-error"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                            <label for="insuranceDocument1" class="required">Insurance Card/Document</label>
+                            <div class="document-upload">
+                                <input type="file" id="insuranceDocument1" name="insurance[0][document]" accept=".pdf,.jpg,.png,.jpeg" data-initially-required="true">
+                                <p>Upload scanned copy (PDF, JPG, PNG, JPEG)</p>
+                                <div class="validation-message" id="insuranceDocument1-error"></div>
+                            </div>
+                        </div>
+                         <!-- No remove button for first -->
+                    </div>
+                     <!-- More insurance items will be added here by JS -->
+                </div>
+
+                <div id="insuranceAddButton" style="display: none; margin-top: 20px;">
+                    <button type="button" id="addInsuranceBtn" class="btn btn-success btn-sm">Add Another Insurance Policy</button>
+                </div>
+            </div>
+
+            <!-- Terms and Conditions Section -->
+             <div class="form-section">
+                <h2 class="section-title">Declaration & Consent</h2>
+
+                <div class="form-group">
+                    <div class="checkbox-group" id="agreeTerms-group"> <!-- Group for validation styling -->
+                        <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                        <label for="agreeTerms" class="required">I certify that the information provided in this form is true, accurate, and complete to the best of my knowledge. I understand that any false statements, misrepresentations, or omissions may be grounds for refusal to hire or, if hired, termination of employment.</label>
+                    </div>
+                     <div class="validation-message" id="agreeTerms-error">You must agree to this statement.</div> <!-- Message associated with group -->
+                </div>
+
+
+                <div class="form-group">
+                     <div class="checkbox-group" id="agreePrivacy-group">
+                        <input type="checkbox" id="agreePrivacy" name="agreePrivacy" required>
+                        <label for="agreePrivacy" class="required">I consent to the collection, processing, and storage of my personal data provided in this form for the purposes of employment application review, onboarding, and ongoing employment administration, in accordance with the company's privacy policy (link to policy if available).</label>
+                    </div>
+                     <div class="validation-message" id="agreePrivacy-error">You must consent to the privacy policy.</div>
+                </div>
+
+
+                 <div class="form-group">
+                    <label for="signatureDate" class="required">Today's Date</label>
+                    <input type="date" id="signatureDate" name="signatureDate" required readonly>
+                     <!-- Readonly, set by JS -->
+                </div>
+
+                 <div class="form-group">
+                    <label for="signedDocument" class="required">Signed Offer Letter / Agreement Upload</label>
+                     <p class="form-note">Please upload a scanned copy of your signed offer letter or employment agreement.</p>
+                    <div class="signature-upload">
+                        <input type="file" id="signedDocument" name="signedDocument" required accept=".pdf,.jpg,.png,.jpeg">
+                        <p class="form-note" style="margin-top: 10px;">Accepted formats: PDF, JPG, PNG, JPEG</p>
+                        <div class="validation-message" id="signedDocument-error"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 40px;">
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Submit Onboarding Form</button> <!-- Larger submit button -->
+            </div>
+        </form>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Constants ---
+        const MAX_ADDITIONAL_EDUCATION = 2;
+        const MAX_EXPERIENCE_ITEMS = 3; // Includes the initial one
+        const MAX_INSURANCE_ITEMS = 3;  // Includes the initial one
+
+        // --- Element Cache ---
+        const onboardingForm = document.getElementById('onboardingForm');
+        const signatureDateField = document.getElementById('signatureDate');
+        const sameAsPermanentCheckbox = document.getElementById('sameAsPermanent');
+        const currentAddressSection = document.getElementById('currentAddressSection');
+        const hasExperienceCheckbox = document.getElementById('hasExperience');
+        const experienceContainer = document.getElementById('experienceContainer');
+        const experienceAddButtonEl = document.getElementById('experienceAddButton');
+        const hasInsuranceCheckbox = document.getElementById('hasInsurance');
+        const insuranceContainer = document.getElementById('insuranceContainer');
+        const insuranceAddButtonEl = document.getElementById('insuranceAddButton');
+        const addEducationButton = document.getElementById('addEducation');
+        const additionalEducationContainer = document.getElementById('additionalEducationContainer');
+        const submitButton = onboardingForm ? onboardingForm.querySelector('button[type="submit"]') : null;
+
+        // --- Initial Setup ---
+        if (signatureDateField) {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            const day = String(today.getDate()).padStart(2, '0');
+            signatureDateField.value = `${year}-${month}-${day}`;
+        } else {
+            console.error("Element with ID 'signatureDate' not found.");
+        }
+
+        // Store initial required state for toggled fields
+        if (onboardingForm) {
+            onboardingForm.querySelectorAll('[data-initially-required="true"]').forEach(el => {
+                el.dataset.initiallyRequired = 'true'; // Ensure it's stored
+            });
+        }
+
+        // Set initial state based on checkboxes
+        if (sameAsPermanentCheckbox) handleSameAsPermanent.call(sameAsPermanentCheckbox);
+        if (hasExperienceCheckbox) handleExperienceToggle.call(hasExperienceCheckbox);
+        if (hasInsuranceCheckbox) handleInsuranceToggle.call(hasInsuranceCheckbox);
+
+        // Ensure initial end date requirement is set correctly based on checkbox
+         if (experienceContainer) {
+             experienceContainer.querySelectorAll('input[name$="[currentJob]"]').forEach(toggleExperienceEndDateRequirement);
+         }
+
+
+        // --- Event Listeners ---
+        if (!onboardingForm) {
+            console.error("Form with ID 'onboardingForm' not found. Aborting script setup.");
+            return; // Stop if form doesn't exist
+        }
+
+        if (sameAsPermanentCheckbox) sameAsPermanentCheckbox.addEventListener('change', handleSameAsPermanent);
+        if (hasExperienceCheckbox) hasExperienceCheckbox.addEventListener('change', handleExperienceToggle);
+        if (hasInsuranceCheckbox) hasInsuranceCheckbox.addEventListener('change', handleInsuranceToggle);
+        if (addEducationButton) addEducationButton.addEventListener('click', addAdditionalEducation);
+        if (experienceAddButtonEl) experienceAddButtonEl.querySelector('button')?.addEventListener('click', addExperience);
+        if (insuranceAddButtonEl) insuranceAddButtonEl.querySelector('button')?.addEventListener('click', addInsurance);
+
+        // Use event delegation for remove buttons and dynamic fields
+        onboardingForm.addEventListener('click', handleDelegatedClicks);
+        onboardingForm.addEventListener('input', handleDelegatedInputChanges); // For text/select etc.
+        onboardingForm.addEventListener('change', handleDelegatedInputChanges); // For file/radio/checkbox/date
+
+        // Form submission handler
+        onboardingForm.addEventListener('submit', handleFormSubmit);
+
+
+        // --- Event Handler Functions ---
+
+        function handleDelegatedClicks(e) {
+            const target = e.target;
+             // Handle remove buttons
+             if (target.classList.contains('remove-education')) {
+                 removeDynamicItem(target, '.education-item', 'Additional Education');
+             } else if (target.classList.contains('remove-experience')) {
+                 removeDynamicItem(target, '.experience-item', 'Experience');
+             } else if (target.classList.contains('remove-insurance')) {
+                 removeDynamicItem(target, '.insurance-item', 'Insurance');
+             }
+             // Handle 'Currently Work Here' checkbox toggle for End Date requirement
+             else if (target.matches('input[name$="[currentJob]"]')) {
+                  toggleExperienceEndDateRequirement(target);
+              }
+        }
+
+        function handleDelegatedInputChanges(e) {
+             const target = e.target;
+             // Trigger validation on input/change for relevant fields
+             if (target.matches('input:not([type=checkbox]), select, textarea')) {
+                 validateField(target);
+             } else if (target.matches('input[type=checkbox], input[type=radio], input[type=file]')) {
+                 validateField(target); // Handles files, specific checkboxes, and radios
+             }
+        }
+
+        function handleSameAsPermanent() {
+            const isChecked = this.checked;
+            if (currentAddressSection) {
+                 currentAddressSection.style.display = isChecked ? 'none' : 'block';
+                 toggleSectionRequired(currentAddressSection, !isChecked);
+                 // Clear validation on hidden fields
+                  if(isChecked) {
+                     currentAddressSection.querySelectorAll('input, select, textarea').forEach(clearValidation);
+                 } else {
+                      // Re-validate potentially now visible fields if needed
+                      currentAddressSection.querySelectorAll('input:required, select:required, textarea:required').forEach(validateField);
+                 }
+            }
+        }
+
+        function handleExperienceToggle() {
+             const isChecked = this.checked;
+             const displayStyle = isChecked ? 'block' : 'none';
+             if (experienceContainer) experienceContainer.style.display = displayStyle;
+             if (experienceAddButtonEl) experienceAddButtonEl.style.display = displayStyle;
+             toggleSectionRequired(experienceContainer, isChecked);
+
+             if(isChecked) {
+                 // Ensure end dates requirements are correctly set and fields validated
+                 experienceContainer.querySelectorAll('input[name$="[currentJob]"]').forEach(toggleExperienceEndDateRequirement);
+                 experienceContainer.querySelectorAll('input:required, select:required, textarea:required').forEach(validateField);
+             } else {
+                  // Clear validation on hidden fields
+                 experienceContainer?.querySelectorAll('input, select, textarea').forEach(clearValidation);
+             }
+        }
+
+        function handleInsuranceToggle() {
+             const isChecked = this.checked;
+             const displayStyle = isChecked ? 'block' : 'none';
+             if (insuranceContainer) insuranceContainer.style.display = displayStyle;
+             if (insuranceAddButtonEl) insuranceAddButtonEl.style.display = displayStyle;
+             toggleSectionRequired(insuranceContainer, isChecked);
+              if(isChecked) {
+                 // Re-validate potentially now visible fields
+                 insuranceContainer.querySelectorAll('input:required, select:required, textarea:required').forEach(validateField);
+             } else {
+                 // Clear validation on hidden fields
+                 insuranceContainer?.querySelectorAll('input, select, textarea').forEach(clearValidation);
+             }
+        }
+
+        // --- Dynamic Element Addition ---
+
+        function addAdditionalEducation() {
+             if (!additionalEducationContainer) return;
+             const currentCount = additionalEducationContainer.querySelectorAll('.education-item').length;
+             if (currentCount >= MAX_ADDITIONAL_EDUCATION) {
+                 alert(`You can add a maximum of ${MAX_ADDITIONAL_EDUCATION} additional degrees.`);
+                 return;
+             }
+             const index = currentCount; // Next index is current count (0-based for name attribute)
+             const displayIndex = index + 1; // For labels, starting from 1
+
+             const newItem = createEducationElement(index, displayIndex);
+             additionalEducationContainer.appendChild(newItem);
+             attachValidationListeners(newItem);
+        }
+
+         function addExperience() {
+             if (!experienceContainer) return;
+             const currentCount = experienceContainer.querySelectorAll('.experience-item').length;
+             if (currentCount >= MAX_EXPERIENCE_ITEMS) {
+                  alert(`You can add a maximum of ${MAX_EXPERIENCE_ITEMS} work experiences in total.`);
+                  return;
+              }
+              const index = currentCount; // Next index is current count
+              const displayIndex = index + 1; // For labels, starting from 1
+
+              const newItem = createExperienceElement(index, displayIndex);
+              experienceContainer.appendChild(newItem);
+              attachValidationListeners(newItem);
+               // Ensure end date requirement is set correctly for the new item
+              const currentJobCheckbox = newItem.querySelector(`input[id="currentJob${displayIndex}"]`);
+               if(currentJobCheckbox) toggleExperienceEndDateRequirement(currentJobCheckbox);
+          }
+
+         function addInsurance() {
+             if (!insuranceContainer) return;
+              const currentCount = insuranceContainer.querySelectorAll('.insurance-item').length;
+              if (currentCount >= MAX_INSURANCE_ITEMS) {
+                  alert(`Maximum ${MAX_INSURANCE_ITEMS} insurance policies allowed.`);
+                  return;
+              }
+              const index = currentCount; // Next index is current count
+              const displayIndex = index + 1; // For labels
+
+              const newItem = createInsuranceElement(index, displayIndex);
+              insuranceContainer.appendChild(newItem);
+              attachValidationListeners(newItem);
+          }
+
+         // --- Element Creation Functions --- (Return the created element)
+
+         function createEducationElement(index, displayIndex) {
+             const div = document.createElement('div');
+             div.className = 'education-item';
+             // Use name="additionalEducation[INDEX][field]" for consistency
+             div.innerHTML = `
+                 <button type="button" class="btn btn-danger btn-sm remove-btn remove-education" title="Remove This Degree">&times;</button>
+                 <h3>Additional Degree ${displayIndex}</h3>
+                 <div class="form-row">
+                     <div class="form-col form-col-3">
+                         <div class="form-group">
+                             <label for="additionalCollege${displayIndex}" class="required">University/College Name</label>
+                             <input type="text" id="additionalCollege${displayIndex}" name="additionalEducation[${index}][college]" required>
+                              <div class="validation-message" id="additionalCollege${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                     <div class="form-col form-col-3">
+                          <div class="form-group">
+                             <label for="additionalYear${displayIndex}" class="required">Year of Completion</label>
+                             <input type="text" id="additionalYear${displayIndex}" name="additionalEducation[${index}][year]" required pattern="\\d{4}" title="Enter 4-digit year">
+                              <div class="validation-message" id="additionalYear${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                     <div class="form-col form-col-3">
+                          <div class="form-group">
+                             <label for="additionalGrade${displayIndex}" class="required">CGPA/Percentage</label>
+                             <input type="text" id="additionalGrade${displayIndex}" name="additionalEducation[${index}][grade]" required>
+                              <div class="validation-message" id="additionalGrade${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="form-row">
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="additionalDegree${displayIndex}" class="required">Degree</label>
+                             <input type="text" id="additionalDegree${displayIndex}" name="additionalEducation[${index}][degree]" required>
+                              <div class="validation-message" id="additionalDegree${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="additionalBranch${displayIndex}" class="required">Branch/Stream</label>
+                             <input type="text" id="additionalBranch${displayIndex}" name="additionalEducation[${index}][branch]" required>
+                              <div class="validation-message" id="additionalBranch${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                 </div>
+                  <div class="form-group">
+                     <label for="additionalCertificate${displayIndex}" class="required">Degree Certificate</label>
+                     <div class="document-upload">
+                         <input type="file" id="additionalCertificate${displayIndex}" name="additionalEducation[${index}][certificate]" required accept=".pdf,.jpg,.png,.jpeg">
+                         <p>Upload scanned copy (PDF, JPG, PNG, JPEG)</p>
+                          <div class="validation-message" id="additionalCertificate${displayIndex}-error"></div>
+                     </div>
+                 </div>
+             `;
+             return div;
+         }
+
+         function createExperienceElement(index, displayIndex) {
+              const div = document.createElement('div');
+              div.className = 'experience-item';
+              div.innerHTML = `
+                 <button type="button" class="btn btn-danger btn-sm remove-btn remove-experience" title="Remove This Experience">&times;</button>
+                  <h3>Experience ${displayIndex}</h3>
+                  <div class="form-row">
+                     <div class="form-col form-col-2">
+                         <div class="form-group">
+                             <label for="company${displayIndex}" class="required">Company Name</label>
+                             <input type="text" id="company${displayIndex}" name="experience[${index}][company]" required data-initially-required="true">
+                              <div class="validation-message" id="company${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="jobTitle${displayIndex}" class="required">Job Title</label>
+                             <input type="text" id="jobTitle${displayIndex}" name="experience[${index}][jobTitle]" required data-initially-required="true">
+                              <div class="validation-message" id="jobTitle${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="form-row">
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="employmentStartDate${displayIndex}" class="required">Start Date</label>
+                             <input type="date" id="employmentStartDate${displayIndex}" name="experience[${index}][startDate]" required data-initially-required="true">
+                              <div class="validation-message" id="employmentStartDate${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="employmentEndDate${displayIndex}" id="endDateLabel${displayIndex}" class="required">End Date</label> <!-- Required toggled -->
+                             <input type="date" id="employmentEndDate${displayIndex}" name="experience[${index}][endDate]" required data-initially-required="true"> <!-- Required toggled -->
+                             <div class="current-job-toggle">
+                                 <input type="checkbox" id="currentJob${displayIndex}" name="experience[${index}][currentJob]" data-index="${index}">
+                                 <label for="currentJob${displayIndex}">I currently work here</label>
+                             </div>
+                              <div class="validation-message" id="employmentEndDate${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="form-row">
+                      <div class="form-col form-col-2">
+                           <div class="form-group">
+                             <label for="employeeId${displayIndex}" class="required">Employee ID</label>
+                             <input type="text" id="employeeId${displayIndex}" name="experience[${index}][employeeId]" required data-initially-required="true">
+                              <div class="validation-message" id="employeeId${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="supervisorName${displayIndex}">Supervisor Name (Optional)</label>
+                             <input type="text" id="supervisorName${displayIndex}" name="experience[${index}][supervisorName]">
+                         </div>
+                     </div>
+                 </div>
+                  <div class="form-group">
+                     <label for="jobDescription${displayIndex}" class="required">Job Description / Responsibilities</label>
+                     <textarea id="jobDescription${displayIndex}" name="experience[${index}][description]" rows="3" required data-initially-required="true"></textarea>
+                      <div class="validation-message" id="jobDescription${displayIndex}-error"></div>
+                 </div>
+                  <div class="form-group">
+                     <label for="experienceCertificate${displayIndex}" class="required">Experience Certificate</label>
+                     <div class="document-upload">
+                         <input type="file" id="experienceCertificate${displayIndex}" name="experience[${index}][certificate]" required accept=".pdf,.jpg,.png,.jpeg" data-initially-required="true">
+                         <p>Upload experience/relieving letter (PDF, JPG, PNG, JPEG)</p>
+                          <div class="validation-message" id="experienceCertificate${displayIndex}-error"></div>
+                     </div>
+                 </div>
+                  <div class="form-group">
+                     <label>Salary Slips (Last 3 Months, Optional)</label>
+                     <div class="document-upload">
+                         <input type="file" id="salarySlips${displayIndex}" name="experience[${index}][salarySlips]" multiple accept=".pdf,.jpg,.png,.jpeg">
+                         <p>Upload up to 3 slips (PDF, JPG, PNG, JPEG)</p>
+                     </div>
+                 </div>
+              `;
+              return div;
+          }
+
+          function createInsuranceElement(index, displayIndex) {
+              const div = document.createElement('div');
+              div.className = 'insurance-item';
+              div.innerHTML = `
+                 <button type="button" class="btn btn-danger btn-sm remove-btn remove-insurance" title="Remove This Insurance">&times;</button>
+                  <h3>Insurance Policy ${displayIndex}</h3>
+                  <div class="form-row">
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="insuranceProvider${displayIndex}" class="required">Provider Name</label>
+                             <input type="text" id="insuranceProvider${displayIndex}" name="insurance[${index}][provider]" required data-initially-required="true">
+                             <div class="validation-message" id="insuranceProvider${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="policyNumber${displayIndex}" class="required">Policy Number</label>
+                             <input type="text" id="policyNumber${displayIndex}" name="insurance[${index}][policyNumber]" required data-initially-required="true">
+                             <div class="validation-message" id="policyNumber${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="form-row">
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="coverageType${displayIndex}" class="required">Coverage Type</label>
+                             <select id="coverageType${displayIndex}" name="insurance[${index}][coverageType]" required data-initially-required="true">
+                                 <option value="">-- Select Coverage --</option>
+                                 <option value="health">Health</option>
+                                 <option value="dental">Dental</option>
+                                 <option value="vision">Vision</option>
+                                 <option value="life">Life</option>
+                                 <option value="disability">Disability</option>
+                                 <option value="other">Other</option>
+                             </select>
+                             <div class="validation-message" id="coverageType${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                     <div class="form-col form-col-2">
+                          <div class="form-group">
+                             <label for="expirationDate${displayIndex}">Expiration Date (Optional)</label>
+                             <input type="date" id="expirationDate${displayIndex}" name="insurance[${index}][expirationDate]">
+                              <div class="validation-message" id="expirationDate${displayIndex}-error"></div>
+                         </div>
+                     </div>
+                 </div>
+                  <div class="form-group">
+                     <label for="insuranceDocument${displayIndex}" class="required">Insurance Card/Document</label>
+                     <div class="document-upload">
+                         <input type="file" id="insuranceDocument${displayIndex}" name="insurance[${index}][document]" required accept=".pdf,.jpg,.png,.jpeg" data-initially-required="true">
+                         <p>Upload scanned copy (PDF, JPG, PNG, JPEG)</p>
+                         <div class="validation-message" id="insuranceDocument${displayIndex}-error"></div>
+                     </div>
+                 </div>
+              `;
+              return div;
+          }
+
+
+        // --- Dynamic Element Removal ---
+        function removeDynamicItem(button, itemSelector, itemType) {
+             const itemToRemove = button.closest(itemSelector);
+             if (itemToRemove) {
+                 // Optional: Add a confirmation dialog
+                 // if (!confirm(`Are you sure you want to remove this ${itemType}?`)) {
+                 //    return;
+                 //}
+                 itemToRemove.remove();
+                 // Re-validation might be needed if removing affects overall form validity,
+                 // but validateAllFields on submit should handle it.
+             }
+        }
+
+        // --- Form Submission ---
+        async function handleFormSubmit(e) {
+             e.preventDefault(); // Prevent default HTML submission
+
+             // Explicitly validate all fields before attempting fetch
+             if (!validateAllFields()) {
+                 alert('Please correct the errors highlighted in the form before submitting.');
+                 // Find the first invalid field and focus/scroll to it
+                 const firstInvalid = onboardingForm.querySelector('.is-invalid');
+                 if (firstInvalid) {
+                     // Scroll field into view, trying to center it
+                      firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      // Try focusing after scrolling (might depend on browser/timing)
+                     setTimeout(() => firstInvalid.focus(), 100);
+                 }
+                 return; // Stop submission
+             }
+
+             const formData = new FormData(onboardingForm);
+             if (!submitButton) return;
+
+             try {
+                 // Show loading indicator
+                 submitButton.disabled = true;
+                 submitButton.textContent = 'Submitting... Please Wait';
+
+                 const response = await fetch("{{ url_for('submit_form') }}", {
+                     method: 'POST',
+                     body: formData
+                 });
+
+                 const contentType = response.headers.get("content-type");
+                 let result;
+                 if (contentType && contentType.includes("application/json")) {
+                     result = await response.json();
+                 } else {
+                     const textResponse = await response.text();
+                     console.error("Server returned non-JSON response:", response.status, response.statusText, textResponse);
+                     throw new Error(`Server error: ${response.status} ${response.statusText}. Response body logged in console.`);
+                 }
+
+                 if (response.ok && result.success) {
+                     alert('Success! Onboarding form submitted successfully.');
+                     onboardingForm.reset();
+                     // Manually trigger state updates for toggled sections after reset
+                     if (sameAsPermanentCheckbox) handleSameAsPermanent.call(sameAsPermanentCheckbox);
+                     if (hasExperienceCheckbox) handleExperienceToggle.call(hasExperienceCheckbox);
+                     if (hasInsuranceCheckbox) handleInsuranceToggle.call(hasInsuranceCheckbox);
+                      // Reset date field
+                      if (signatureDateField) {
+                          const today = new Date();
+                          const year = today.getFullYear();
+                          const month = String(today.getMonth() + 1).padStart(2, '0');
+                          const day = String(today.getDate()).padStart(2, '0');
+                          signatureDateField.value = `${year}-${month}-${day}`;
+                      }
+                      // Remove dynamically added sections
+                      additionalEducationContainer.innerHTML = '';
+                      // Keep only the first experience/insurance item if they exist, remove others
+                      experienceContainer?.querySelectorAll('.experience-item:not(:first-child)').forEach(el => el.remove());
+                      insuranceContainer?.querySelectorAll('.insurance-item:not(:first-child)').forEach(el => el.remove());
+
+                     // Clear all validation states visually
+                     onboardingForm.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+                         el.classList.remove('is-invalid', 'is-valid');
+                     });
+                     onboardingForm.querySelectorAll('.validation-message').forEach(el => {
+                         el.textContent = '';
+                         el.style.display = 'none';
+                     });
+                      onboardingForm.querySelectorAll('.document-upload, .signature-upload, .radio-group-container, .checkbox-group').forEach(el => {
+                         el.classList.remove('is-invalid', 'is-valid');
+                      });
+
+                     // Scroll to top
+                     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                 } else {
+                     alert('Submission Failed: ' + (result.error || result.message || 'An unknown error occurred. Please check the form or contact support.'));
+                 }
+             } catch (error) {
+                 console.error('Error submitting form via Fetch:', error);
+                 alert('An error occurred while submitting the form. Please check your network connection or contact support.\n\nDetails: ' + error.message);
+             } finally {
+                 // Always re-enable the submit button
+                 submitButton.disabled = false;
+                 submitButton.textContent = 'Submit Onboarding Form';
+             }
+         }
+
+
+        // --- Validation Logic ---
+
+        function validateAllFields() {
+            let isFormValid = true;
+            console.log("Starting full form validation...");
+
+            const fieldsToValidate = onboardingForm.querySelectorAll('input, select, textarea');
+
+            fieldsToValidate.forEach(field => {
+                 if (isElementVisible(field)) {
+                     // If visible, validate it (validateField handles required/pattern logic)
+                    if (!validateField(field)) {
+                         // If validation fails for ANY visible field, mark form as invalid
+                         // We check required status inside validateField
+                         if(field.hasAttribute('required') || (field.value.trim() !== '' && (field.pattern || field.type === 'email' || field.type === 'tel'))) {
+                             console.log(`Field invalid: ${field.id || field.name}`);
+                             isFormValid = false;
+                         }
+                    }
+                 } else {
+                     // If hidden, clear its validation state
+                     clearValidation(field);
+                 }
+            });
+
+            console.log("Full form validation complete. Is valid:", isFormValid);
+            return isFormValid;
+        }
+
+         function validateField(field) {
+             // No need to check visibility here, validateAllFields does that.
+             // This function just determines if a GIVEN field is valid based on its current state.
+
+             let isValid = true;
+             let errorMessage = "";
+             const isRequired = field.hasAttribute('required');
+
+             // --- Specific Field Type Validations ---
+              if (field.type === 'radio' && isRequired) {
+                 // For radios, we validate the group. The return value applies to the group state.
+                 isValid = validateRadioGroup(field.name);
+                 // Don't return isValid for radio here, let individual field UI update below if needed
+              } else if (field.type === 'checkbox' && isRequired) {
+                 isValid = field.checked;
+                 errorMessage = `This box must be checked.`;
+                 const groupContainer = field.closest('.checkbox-group');
+                 updateValidationUI(field, isValid, errorMessage, groupContainer);
+                 return isValid; // Return early for checkboxes
+             } else if (field.type === 'file') {
+                  if (isRequired && (!field.files || field.files.length === 0)) {
+                     isValid = false;
+                     errorMessage = "Please upload a file.";
+                 } else if (field.files && field.files.length > 0) {
+                      const acceptedTypes = field.accept?.split(',').map(t => t.trim().toLowerCase()).filter(t => t); // Filter empty strings
+                      if (acceptedTypes && acceptedTypes.length > 0 && acceptedTypes[0] !== '*/*') {
+                          for (let i = 0; i < field.files.length; i++) {
+                             const file = field.files[i];
+                             const fileTypeLower = file.type.toLowerCase();
+                             const fileNameLower = file.name.toLowerCase();
+                             let typeMatch = acceptedTypes.some(type => {
+                                 if (type.startsWith('.')) return fileNameLower.endsWith(type); // Check extension
+                                 if (type.endsWith('/*')) return fileTypeLower.startsWith(type.slice(0, -1)); // Check category/* (e.g. image/*)
+                                 return fileTypeLower === type; // Check exact MIME type
+                             });
+                             if (!typeMatch) {
+                                isValid = false;
+                                errorMessage = `Invalid file type. Accepted: ${field.accept}`;
+                                break;
+                             }
+                         }
+                     }
+                 }
+                  const uploadContainer = field.closest('.document-upload, .signature-upload');
+                  updateValidationUI(field, isValid, errorMessage, uploadContainer);
+                  return isValid; // Return early for file inputs
+             } else {
+                 // --- General Input Validations ---
+                 const value = field.value; // Use raw value for pattern check
+                 const trimmedValue = value.trim();
+
+                 // 1. Required check (only if required attribute is present)
+                 if (isRequired && trimmedValue === "") {
+                     isValid = false;
+                     errorMessage = "This field is required.";
+                 }
+                 // 2. Specific type/pattern checks (only if not empty or pattern exists)
+                 else if (trimmedValue !== "" || field.pattern) { // Check even if empty if pattern exists
+                     if (field.type === 'email') {
+                         isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedValue);
+                         errorMessage = "Please enter a valid email address.";
+                     } else if (field.pattern && value !== "") { // Only apply pattern if value is not empty string
+                         const regex = new RegExp(`^(?:${field.pattern})$`); // Anchor the pattern
+                         isValid = regex.test(value); // Use non-trimmed value for regex test
+                         errorMessage = field.title || "Input format is invalid.";
+                     } else if (field.type === 'date' && isRequired && !value) {
+                         // Handled by required check, but ensure empty isn't marked valid here
+                         isValid = false;
+                         errorMessage = "Please enter a valid date.";
+                     } else if (field.type === 'date' && value && isNaN(new Date(value).getTime())) {
+                          isValid = false; // Invalid date format entered
+                          errorMessage = "Please enter a valid date (YYYY-MM-DD).";
+                     } else if (field.minLength > 0 && trimmedValue.length < field.minLength) {
+                         isValid = false;
+                         errorMessage = `Minimum length is ${field.minLength} characters.`;
+                     } else if (field.maxLength > 0 && trimmedValue.length > field.maxLength) {
+                         // This check is often less critical as browser might enforce it
+                         isValid = false;
+                         errorMessage = `Maximum length is ${field.maxLength} characters.`;
+                     } else if (field.tagName === 'SELECT' && isRequired && trimmedValue === "") {
+                          isValid = false;
+                          errorMessage = "Please select an option.";
+                     }
+                 }
+
+                 // Update UI for standard inputs
+                 updateValidationUI(field, isValid, errorMessage);
+             }
+
+             // Special case for radio: validateField initiated the group check, but the return value
+             // should reflect this specific radio's state (usually valid unless group invalid)
+             if (field.type === 'radio') {
+                 // isValid here reflects the *group* validity.
+                 // We update the group container UI in validateRadioGroup.
+                 return isValid; // Return group state
+             }
+
+             return isValid;
+         }
+
+        function validateRadioGroup(name) {
+             const group = onboardingForm.querySelectorAll(`input[type="radio"][name="${name}"]`);
+             if (!group || group.length === 0) return true;
+
+             const isRequired = Array.from(group).some(radio => radio.hasAttribute('required'));
+             if (!isRequired) return true; // Not required, always valid as a group
+
+             let isSelected = false;
+             group.forEach(radio => {
+                 if (radio.checked) { isSelected = true; }
+             });
+
+             const groupContainer = group[0].closest('.radio-group-container');
+             const errorElement = groupContainer ? groupContainer.querySelector('.validation-message') : null;
+
+             if (isSelected) {
+                  if (groupContainer) groupContainer.classList.remove('is-invalid');
+                  if (groupContainer) groupContainer.classList.add('is-valid'); // Optional valid style
+                 if (errorElement) {
+                     errorElement.style.display = 'none';
+                     errorElement.textContent = '';
+                 }
+              } else {
+                  if (groupContainer) groupContainer.classList.add('is-invalid');
+                  if (groupContainer) groupContainer.classList.remove('is-valid');
+                 if (errorElement) {
+                     errorElement.textContent = "Please select one option.";
+                     errorElement.style.display = 'block';
+                 }
+             }
+              return isSelected; // Return the validity state of the group
+         }
+
+        function updateValidationUI(field, isValid, message, container = null) {
+              const targetElement = container || field;
+              const errorElement = findErrorElement(field); // Find message container associated with the FIELD
+
+              // Always remove both classes first
+              targetElement.classList.remove('is-invalid', 'is-valid');
+              if(field !== targetElement) field.classList.remove('is-invalid', 'is-valid');
+
+              if (isValid) {
+                  targetElement.classList.add('is-valid');
+                  if(field !== targetElement) field.classList.add('is-valid');
+                 if (errorElement) {
+                     errorElement.style.display = 'none';
+                     errorElement.textContent = '';
+                 }
+             } else {
+                  targetElement.classList.add('is-invalid');
+                   if(field !== targetElement) field.classList.add('is-invalid');
+                 if (errorElement) {
+                     errorElement.textContent = message;
+                     errorElement.style.display = 'block';
+                 }
+             }
+         }
+
+          function clearValidation(field) {
+              const errorElement = findErrorElement(field);
+              field.classList.remove('is-invalid', 'is-valid');
+              const uploadContainer = field.closest('.document-upload, .signature-upload');
+              const checkGroup = field.closest('.checkbox-group');
+              const radioContainer = field.closest('.radio-group-container');
+
+              if(uploadContainer) uploadContainer.classList.remove('is-invalid', 'is-valid');
+              if(checkGroup) checkGroup.classList.remove('is-invalid', 'is-valid');
+              if(radioContainer) radioContainer.classList.remove('is-invalid', 'is-valid');
+
+
+              if (errorElement) {
+                  errorElement.style.display = 'none';
+                  errorElement.textContent = '';
+              }
+          }
+
+         function findErrorElement(field) {
+              // Prioritize ID-based convention first
+              if (field.id) {
+                  const elById = document.getElementById(`${field.id}-error`);
+                  if (elById) return elById;
+              }
+              // Check next sibling
+               let sibling = field.nextElementSibling;
+               if (sibling && sibling.classList.contains('validation-message')) return sibling;
+
+               // Check within parent form-group
+               const formGroup = field.closest('.form-group');
+               if (formGroup) {
+                   const elInGroup = formGroup.querySelector('.validation-message');
+                   if (elInGroup) return elInGroup;
+               }
+                // Check within specific containers (radio, checkbox, uploads)
+               const specificContainer = field.closest('.radio-group-container, .checkbox-group, .document-upload, .signature-upload');
+               if (specificContainer) {
+                    const elInContainer = specificContainer.querySelector('.validation-message');
+                    if (elInContainer) return elInContainer;
+               }
+               // Check sibling of checkbox group (for terms/privacy)
+                const groupSibling = field.closest('.checkbox-group')?.nextElementSibling;
+                 if (groupSibling && groupSibling.classList.contains('validation-message')) return groupSibling;
+
+              return null; // No error element found reliably
+          }
+
+         // --- Utility Functions ---
+
+         function toggleSectionRequired(container, isRequired) {
+              if (!container) return;
+              container.querySelectorAll('input, select, textarea').forEach(input => {
+                  // Use the data-initially-required flag we set
+                  const shouldBeRequired = input.dataset.initiallyRequired === 'true';
+
+                  if (shouldBeRequired) {
+                       if (isRequired) {
+                           input.setAttribute('required', 'required');
+                           // If becoming required, validate it now if it was previously hidden/valid
+                           validateField(input);
+                       } else {
+                           input.removeAttribute('required');
+                           clearValidation(input); // Clear validation when making not required
+                       }
+                  } else if (!isRequired) {
+                       // If section is hidden, clear validation even for non-required fields
+                       clearValidation(input);
+                   }
+              });
+         }
+
+          function toggleExperienceEndDateRequirement(checkbox) {
+              const isCurrentJob = checkbox.checked;
+              const index = checkbox.dataset.index;
+              // Adjust selector to handle potentially different display indices if items were removed
+              const itemContainer = checkbox.closest('.experience-item');
+              if (!itemContainer) return;
+              const endDateInput = itemContainer.querySelector(`input[name="experience[${index}][endDate]"]`);
+              const endDateLabel = itemContainer.querySelector(`label[for="employmentEndDate${parseInt(index) + 1}"]`); // Assumes ID pattern matches index+1
+
+              if (endDateInput) {
+                  if (isCurrentJob) {
+                      endDateInput.removeAttribute('required');
+                      endDateInput.value = '';
+                      endDateInput.disabled = true;
+                      clearValidation(endDateInput);
+                      if (endDateLabel) endDateLabel.classList.remove('required');
+                  } else {
+                      endDateInput.setAttribute('required', 'required');
+                      endDateInput.disabled = false;
+                      if (endDateLabel) endDateLabel.classList.add('required');
+                      validateField(endDateInput); // Validate now that it's required
+                  }
+              }
+          }
+
+         function findAssociatedLabel(input) {
+            if (input.labels && input.labels.length > 0) return input.labels[0];
+            if (input.id) {
+                 const label = onboardingForm.querySelector(`label[for="${input.id}"]`);
+                 if (label) return label;
+            }
+            if (input.parentElement?.tagName === 'LABEL') return input.parentElement;
+            return input.closest('.form-group')?.querySelector('label');
+         }
+
+         function isElementVisible(el) {
+              if (!el) return false;
+              // Check inline style, computed style, and offset height/width
+              return el.style.display !== 'none' && window.getComputedStyle(el).display !== 'none' && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+          }
+
+         function attachValidationListeners(parentElement) {
+              parentElement.querySelectorAll('input, select, textarea').forEach(field => {
+                  field.addEventListener('input', handleDelegatedInputChanges);
+                  field.addEventListener('change', handleDelegatedInputChanges);
+                  // Also store initial required state for new dynamic fields
+                   if(field.hasAttribute('required')) {
+                       field.dataset.initiallyRequired = 'true';
+                   }
+              });
+          }
+
+    });
+    </script>
+
+</body>
+</html>
